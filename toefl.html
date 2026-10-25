@@ -889,6 +889,157 @@ button.forgot{color:var(--muted);text-align:right;max-width:28ch}
 .rc-prev .cicon{width:40px;height:40px}
 .cicon{display:inline-block;flex:none;line-height:0}
 .cicon svg{width:100%;height:100%;overflow:visible}
+/* ===== Mr.Sam Stories ===== */
+.ms-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:6px 4px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ms-row::-webkit-scrollbar{display:none}
+.ms-item{flex:none;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:7px;width:86px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit}
+.ms-ring{position:relative;width:78px;height:78px;border-radius:50%;padding:3px;background:conic-gradient(from 210deg,#D5F36A,#FFD84D,#FF6FB5,#8C7BFF,#D5F36A);transition:transform .2s cubic-bezier(.2,.7,.2,1)}
+.ms-item:hover .ms-ring{transform:scale(1.06) rotate(-3deg)}
+.ms-item:active .ms-ring{transform:scale(.95)}
+.ms-item.seen .ms-ring{background:rgba(127,140,133,.45)}
+.ms-in{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;border:3px solid var(--ms-gap,#F5F3EF);line-height:1;gap:2px;overflow:hidden}
+.ms-in b{font:900 20px/1 "Unbounded","Arial Black",system-ui,sans-serif;letter-spacing:-.02em;color:#10291E;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-in small{font:900 8.5px/1 "Unbounded",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:rgba(16,41,30,.7)}
+.t-violet .ms-in,.ms-ava.t-violet{background:linear-gradient(150deg,#C9C0FF,#8C7BFF)}
+.t-pink .ms-in,.ms-ava.t-pink{background:linear-gradient(150deg,#FFC2E0,#FF6FB5)}
+.t-yellow .ms-in,.ms-ava.t-yellow{background:linear-gradient(150deg,#FFF0A8,#FFD84D)}
+.t-lime .ms-in,.ms-ava.t-lime{background:linear-gradient(150deg,#F0FCC0,#D5F36A)}
+.t-mint .ms-in,.ms-ava.t-mint{background:linear-gradient(150deg,#D4F6E8,#7FD8B6)}
+.ms-new{position:absolute;right:-4px;bottom:2px;background:#FF5A6E;color:#fff;font:900 9px/1 "Unbounded",system-ui,sans-serif;text-transform:uppercase;padding:4px 6px;border-radius:999px;border:2px solid var(--ms-gap,#F5F3EF)}
+.ms-name{font-weight:800;font-size:13px;line-height:1.15;text-align:center;max-width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.ms-lock,.ms-lock body{overflow:hidden}
+.ms-ov{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:rgba(8,20,14,.78);-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);opacity:0;transition:opacity .2s}
+.ms-ov.in{opacity:1}
+.ms-card{position:relative;width:min(420px,100vw);height:min(760px,100dvh);border-radius:30px;overflow:hidden;background:#10291E;color:#fff;touch-action:pan-y;user-select:none;-webkit-user-select:none;transform:scale(.94);transition:transform .25s cubic-bezier(.2,.7,.2,1);box-shadow:0 40px 90px -30px rgba(0,0,0,.7)}
+.ms-ov.in .ms-card{transform:none}
+@media (max-width:480px){.ms-card{border-radius:0;width:100vw;height:100dvh}}
+.ms-bars{position:absolute;top:12px;left:12px;right:12px;z-index:5;display:flex;gap:4px}
+.ms-bars span{flex:1;height:3.5px;border-radius:3px;background:rgba(255,255,255,.32);overflow:hidden}
+.ms-bars i{display:block;height:100%;width:0;background:#fff;border-radius:3px}
+.ms-top{position:absolute;top:24px;left:14px;right:8px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ms-who{display:flex;align-items:center;gap:10px;min-width:0}
+.ms-who b{display:block;font:900 15px/1.1 "Unbounded",system-ui,sans-serif}
+.ms-who small{display:block;font-weight:800;font-size:12.5px;opacity:.85}
+.ms-ava{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:900 16px/1 "Unbounded",system-ui,sans-serif;color:#10291E;border:2px solid rgba(255,255,255,.8);flex:none}
+.ms-x{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.ms-x:focus-visible,.ms-nav:focus-visible,.ms-cta:focus-visible{outline:3px solid #D5F36A;outline-offset:2px}
+.ms-nav{position:absolute;top:90px;bottom:90px;z-index:3;width:32%;background:transparent;border:0;cursor:pointer}
+.ms-nav.prev{left:0}.ms-nav.next{right:0;width:68%}
+.ms-stage{position:absolute;inset:0}
+.ms-slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:96px 26px 104px;overflow:hidden;animation:msIn .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes msIn{from{opacity:0;transform:translateX(18px) scale(.985)}to{opacity:1;transform:none}}
+.ms-slide.t-violet{background:linear-gradient(165deg,#6E5BF0 0%,#8C7BFF 45%,#C7A6FF 100%)}
+.ms-slide.t-pink{background:linear-gradient(165deg,#E2408F 0%,#FF6FB5 48%,#FFB0A8 100%)}
+.ms-slide.t-yellow{background:linear-gradient(165deg,#F2A93B 0%,#FFD84D 55%,#F6F08A 100%);color:#10291E}
+.ms-slide.t-lime{background:linear-gradient(165deg,#153E2D 0%,#2F6B3D 50%,#9CC23A 100%)}
+.ms-slide.t-mint{background:linear-gradient(165deg,#1E6B53 0%,#3BA884 55%,#A8EBCF 100%)}
+.ms-blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.55;pointer-events:none}
+.ms-blob.b1{width:280px;height:280px;top:-60px;right:-80px;background:#D5F36A;animation:msFloat 9s ease-in-out infinite}
+.ms-blob.b2{width:240px;height:240px;bottom:-40px;left:-90px;background:#FFFFFF;opacity:.35;animation:msFloat 11s ease-in-out infinite reverse}
+@keyframes msFloat{50%{transform:translate(-20px,30px) scale(1.1)}}
+.ms-body{position:relative;z-index:1;display:flex;flex-direction:column;gap:16px}
+.ms-score{display:flex;flex-direction:column;gap:4px}
+.ms-exam{font:900 13px/1 "Unbounded",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.08em;opacity:.9}
+.ms-score b{font:900 clamp(92px,30vw,132px)/.9 "Unbounded","Arial Black",system-ui,sans-serif;letter-spacing:-.05em;text-shadow:0 10px 40px rgba(0,0,0,.18)}
+.ms-score b:not([data-to]),.ms-score b[data-to=""]{font-size:clamp(38px,11vw,52px);line-height:1;letter-spacing:-.02em;text-transform:uppercase}
+.ms-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ms-glass{display:inline-flex;align-items:center;padding:8px 13px;border-radius:999px;font-weight:900;font-size:13.5px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 24px -14px rgba(0,0,0,.4);-webkit-backdrop-filter:blur(12px) saturate(160%);backdrop-filter:blur(12px) saturate(160%)}
+.t-yellow .ms-glass{background:rgba(255,255,255,.45);border-color:rgba(255,255,255,.7)}
+.ms-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:2px}
+.ms-scale span{display:flex;flex-direction:column;gap:6px;align-items:center}
+.ms-scale i{display:block;width:100%;height:10px;border-radius:6px;background:rgba(255,255,255,.25)}
+.ms-scale .on i{background:rgba(255,255,255,.85)}
+.ms-scale .cur i{background:#D5F36A;box-shadow:0 0 0 3px rgba(213,243,106,.35),0 0 18px #D5F36A}
+.t-yellow .ms-scale .cur i,.t-lime .ms-scale .cur i{background:#10291E;box-shadow:none}
+.t-lime .ms-scale .cur i{background:#FFD84D}
+.ms-scale small{font:900 11px/1 "Unbounded",system-ui,sans-serif;opacity:.75}
+.ms-scale .cur small{opacity:1}
+.ms-secs{display:flex;flex-direction:column;gap:9px;padding:14px 16px;border-radius:20px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.ms-sec{display:grid;grid-template-columns:86px 1fr 38px;align-items:center;gap:10px;font-weight:900;font-size:14px}
+.ms-sec b{font:900 16px/1 "Unbounded",system-ui,sans-serif;text-align:right}
+.ms-bar{height:10px;border-radius:6px;background:rgba(255,255,255,.25);overflow:hidden}
+.ms-bar i{display:block;height:100%;width:var(--w);border-radius:6px;background:#fff;transform-origin:left;animation:msBar .8s cubic-bezier(.2,.7,.2,1) var(--d) both}
+@keyframes msBar{from{transform:scaleX(0)}}
+.ms-note{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:20px;background:rgba(16,41,30,.28);font-weight:700;font-size:15px;line-height:1.42}
+.t-yellow .ms-note{background:rgba(255,255,255,.5)}
+.ms-note p{margin:0}
+.ms-note small{display:block;font:900 10.5px/1 "Unbounded",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.08em;opacity:.75;margin-bottom:5px}
+.ms-kicker{font:900 12px/1 "Unbounded",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.08em;opacity:.85}
+.ms-title{margin:0;font:900 clamp(30px,8.5vw,40px)/1.02 "Unbounded",system-ui,sans-serif;text-transform:uppercase;letter-spacing:-.02em}
+.ms-lines{margin:0;padding:0;list-style:none;counter-reset:l;display:flex;flex-direction:column;gap:10px}
+.ms-lines li{counter-increment:l;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;font-weight:800;font-size:16px;line-height:1.35;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);animation:msUp .45s cubic-bezier(.2,.7,.2,1) var(--d) both}
+.ms-lines li::before{content:counter(l);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#10291E;font:900 14px/1 "Unbounded",system-ui,sans-serif}
+@keyframes msUp{from{opacity:0;transform:translateY(12px)}}
+.ms-cta{position:absolute;left:18px;right:18px;bottom:20px;z-index:6;display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:999px;background:#D5F36A;color:#10291E;font:900 15px/1 "Unbounded",system-ui,sans-serif;text-transform:uppercase;text-decoration:none;box-shadow:0 6px 0 #9CC23A,0 18px 40px -16px rgba(0,0,0,.5)}
+.ms-cta:active{transform:translateY(3px);box-shadow:0 3px 0 #9CC23A}
+.ms-card.paused .ms-bars{opacity:.5}
+@media (prefers-reduced-motion:reduce){.ms-slide,.ms-lines li,.ms-bar i,.ms-blob{animation:none!important}}
+/* ===== v6: aura, liquid glass, геймификация, сторис ===== */
+body::before{content:"";position:fixed;inset:-25vmax;z-index:-1;pointer-events:none;background:
+  radial-gradient(36vmax 26vmax at 10% 8%,rgba(213,243,106,.32),transparent 62%),
+  radial-gradient(32vmax 26vmax at 92% 22%,rgba(140,123,255,.2),transparent 62%),
+  radial-gradient(38vmax 28vmax at 50% 100%,rgba(255,111,181,.13),transparent 62%);animation:aura 26s ease-in-out infinite alternate}
+@keyframes aura{to{transform:translate(4vmax,-3vmax) rotate(8deg)}}
+body{background:var(--bg)}
+.topbar{background:rgba(245,243,239,.62)!important;-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);border-bottom:1px solid rgba(255,255,255,.7)!important}
+.card:not(.plan):not(.g-lvl):not(.g-streak):not(.g-goal){background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 0 #fff,0 22px 46px -32px rgba(21,62,45,.42);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}
+.plan{box-shadow:0 22px 46px -30px rgba(21,62,45,.6)}
+
+.g-card{display:flex;align-items:center;gap:18px;min-height:150px;position:relative;overflow:hidden;transition:transform .2s cubic-bezier(.2,.7,.2,1)}
+.g-card:hover{transform:translateY(-3px)}
+.g-lvl{background:linear-gradient(140deg,#153E2D,#1F5A3E)!important;color:#F2F7EF;border-color:rgba(255,255,255,.08)!important}
+.g-lvl::after{content:"";position:absolute;width:220px;height:220px;right:-70px;top:-80px;border-radius:50%;background:radial-gradient(circle,rgba(213,243,106,.45),transparent 65%);pointer-events:none}
+.g-lvl .eyebrow{color:rgba(242,247,239,.7)}
+.g-lvl .g-sub,.g-lvl .g-hint{color:rgba(242,247,239,.75)}
+.g-txt{display:flex;flex-direction:column;gap:4px;min-width:0;position:relative;z-index:1}
+.g-big{font:900 clamp(20px,2vw,24px)/1.1 var(--display,"Unbounded"),system-ui,sans-serif;text-transform:uppercase;letter-spacing:-.01em}
+.g-lvl .g-big{color:#D5F36A}
+.g-sub{font-size:13.5px;font-weight:700;color:var(--muted);line-height:1.35}
+.g-hint{font:800 11.5px/1.3 var(--font);opacity:.85;margin-top:2px}
+.g-txt .btn{align-self:flex-start;margin-top:6px}
+.g-ring-wrap{position:relative;flex:none;width:104px;height:104px;display:grid;place-items:center}
+.g-ring-wrap.sm{width:92px;height:92px}
+.g-ring{position:absolute;inset:0}
+.g-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.g-ring-bg{fill:none;stroke:rgba(127,140,133,.22);stroke-width:10}
+.g-lvl .g-ring-bg{stroke:rgba(255,255,255,.14)}
+.g-ring-fg{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .8s cubic-bezier(.2,.7,.2,1)}
+.g-ring.lime .g-ring-fg{stroke:#D5F36A}
+.g-ring.violet .g-ring-fg{stroke:#8C7BFF}
+.g-ring-num{position:relative;font:900 30px/1 var(--display,"Unbounded"),system-ui,sans-serif}
+.g-ring-wrap.sm .g-ring-num{font-size:20px}
+.g-ring-cap{position:absolute;bottom:22px;font:900 10px/1 var(--display,"Unbounded"),system-ui;text-transform:uppercase;opacity:.7}
+.g-ring-wrap:not(.sm) .g-ring-num{margin-top:-10px}
+.g-streak{flex-direction:column;align-items:stretch;gap:12px;background:linear-gradient(150deg,#FFF6CF,#FFE7B8)!important}
+.g-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.g-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.g-day{display:flex;flex-direction:column;align-items:center;gap:5px;font:800 11px/1 var(--font);color:var(--muted);text-transform:lowercase}
+.g-day i{width:100%;max-width:38px;aspect-ratio:1;border-radius:12px;background:rgba(21,62,45,.07);display:grid;place-items:center;font-style:normal}
+.g-day.on i{background:#fff;box-shadow:0 6px 14px -8px rgba(201,113,30,.7)}
+.g-day i .cicon{width:24px;height:24px}
+.g-day.today{color:var(--ink)}
+.g-day.today i{outline:2px dashed rgba(21,62,45,.35);outline-offset:2px}
+.g-goal{background:linear-gradient(150deg,#EEEAFF,#E0F5EC)!important}
+.g-ach .chart-head{margin-bottom:14px}
+.g-count{display:inline-block;margin-left:6px;padding:4px 10px;border-radius:999px;background:var(--lime,#D5F36A);font:900 12px/1 var(--display,"Unbounded"),system-ui;vertical-align:middle}
+.g-badges{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.g-badge{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:16px 10px;border-radius:20px;background:rgba(21,62,45,.05);filter:grayscale(1);opacity:.55;transition:transform .2s}
+.g-badge.on{filter:none;opacity:1;background:linear-gradient(160deg,#fff,#F3F9DC);box-shadow:inset 0 1px 0 #fff,0 12px 26px -18px rgba(21,62,45,.5)}
+.g-badge.on:hover{transform:translateY(-3px) rotate(-2deg)}
+.g-badge-ic{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:#fff}
+.g-badge-ic .cicon{width:40px;height:40px}
+.g-badge b{font:900 12.5px/1.15 var(--display,"Unbounded"),system-ui;text-transform:uppercase}
+.g-badge small{font-size:12px;font-weight:700;color:var(--muted);line-height:1.25}
+@media (max-width:980px){.g-badges{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.g-badges{grid-template-columns:repeat(2,minmax(0,1fr))}.g-card{min-height:0}}
+.g-stories{--ms-gap:#FBFAF7;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:18px;padding:14px 16px 8px 22px!important}
+.g-st-head{display:flex;flex-direction:column;gap:4px}
+.g-st-head b{font:900 17px/1 var(--display,"Unbounded"),system-ui;text-transform:uppercase}
+.g-st-head small{font-size:12.5px;font-weight:700;color:var(--muted);max-width:16ch;line-height:1.3}
+.g-st-row{min-width:0}
+@media (max-width:640px){.g-stories{grid-template-columns:minmax(0,1fr);gap:6px;padding:14px 10px 6px 14px!important}.g-st-head{flex-direction:row;align-items:baseline;gap:10px}.g-st-head small{max-width:none}}
+@media (prefers-reduced-motion:reduce){body::before{animation:none}}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -1212,6 +1363,205 @@ window.MrSamAuth = (function () {
 </script>
 <script>/* Mr.Sam: 3D-иконки (clay). */
 const CI = {"calendar": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"8\" y=\"12\" width=\"48\" height=\"44\" rx=\"12\" fill=\"#FFFFFF\"/><path d=\"M8 24a12 12 0 0 1 12-12h24a12 12 0 0 1 12 12v4H8z\" fill=\"#FF6FB5\"/><rect x=\"18\" y=\"6\" width=\"7\" height=\"14\" rx=\"3.5\" fill=\"#1D5A40\"/><rect x=\"39\" y=\"6\" width=\"7\" height=\"14\" rx=\"3.5\" fill=\"#1D5A40\"/><rect x=\"17\" y=\"34\" width=\"9\" height=\"8\" rx=\"3\" fill=\"#8C7BFF\"/><rect x=\"28\" y=\"34\" width=\"9\" height=\"8\" rx=\"3\" fill=\"#C9EE4F\"/><rect x=\"39\" y=\"34\" width=\"9\" height=\"8\" rx=\"3\" fill=\"#E7E2D6\"/><rect x=\"17\" y=\"44\" width=\"9\" height=\"7\" rx=\"3\" fill=\"#E7E2D6\"/><rect x=\"28\" y=\"44\" width=\"9\" height=\"7\" rx=\"3\" fill=\"#E7E2D6\"/></g></g></svg>", "flame": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M32 6c3 9 16 15 16 30a16 16 0 0 1-32 0c0-8 4-12 7-16 1 5 3 8 6 9-1-9 1-16 3-23z\" fill=\"#FF9A3D\"/><path d=\"M32 30c2 5 9 8 9 15a9 9 0 0 1-18 0c0-4 2-6 4-8 1 3 2 4 4 5-.5-4 0-8 1-12z\" fill=\"#FFD447\"/></g></g></svg>", "target": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><circle cx=\"30\" cy=\"34\" r=\"22\" fill=\"#FFFFFF\"/><circle cx=\"30\" cy=\"34\" r=\"15\" fill=\"#FF6FB5\"/><circle cx=\"30\" cy=\"34\" r=\"8\" fill=\"#FFFFFF\"/><circle cx=\"30\" cy=\"34\" r=\"3.5\" fill=\"#E24D97\"/><path d=\"M31 33L52 12\" stroke=\"#1D5A40\" stroke-width=\"4.5\" stroke-linecap=\"round\"/><path d=\"M49 6l2 6 6 2-5 5-6-2-2-6z\" fill=\"#C9EE4F\"/></g></g></svg>", "notebook": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"12\" y=\"8\" width=\"38\" height=\"48\" rx=\"9\" fill=\"#8C7BFF\"/><rect x=\"20\" y=\"8\" width=\"30\" height=\"48\" rx=\"8\" fill=\"#FFFFFF\"/><rect x=\"26\" y=\"18\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#DCD6EE\"/><rect x=\"26\" y=\"27\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#DCD6EE\"/><rect x=\"26\" y=\"36\" width=\"12\" height=\"4\" rx=\"2\" fill=\"#DCD6EE\"/><path d=\"M40 52l14-26 6 3-14 26-7 3z\" fill=\"#FFD447\"/><path d=\"M54 26l2-4a3 3 0 0 1 5 3l-2 4z\" fill=\"#FF6FB5\"/></g></g></svg>", "book": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M6 16c9-5 18-4 26 2v38c-8-6-17-7-26-2z\" fill=\"#6FD6AE\"/><path d=\"M58 16c-9-5-18-4-26 2v38c8-6 17-7 26-2z\" fill=\"#3FB68A\"/><path d=\"M11 21c6-2 12-1 17 3v4c-5-4-11-5-17-3z\" fill=\"#FFFFFF\" opacity=\".75\"/><path d=\"M11 30c6-2 12-1 17 3v4c-5-4-11-5-17-3z\" fill=\"#FFFFFF\" opacity=\".75\"/></g></g></svg>", "headphones": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M10 38v-6a22 22 0 0 1 44 0v6h-6v-6a16 16 0 0 0-32 0v6z\" fill=\"#1D5A40\"/><rect x=\"7\" y=\"34\" width=\"14\" height=\"22\" rx=\"7\" fill=\"#8C7BFF\"/><rect x=\"43\" y=\"34\" width=\"14\" height=\"22\" rx=\"7\" fill=\"#8C7BFF\"/></g></g></svg>", "mic": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"22\" y=\"6\" width=\"20\" height=\"34\" rx=\"10\" fill=\"#FF6FB5\"/><path d=\"M14 30a18 18 0 0 0 36 0\" fill=\"none\" stroke=\"#1D5A40\" stroke-width=\"5\" stroke-linecap=\"round\"/><rect x=\"29\" y=\"47\" width=\"6\" height=\"9\" rx=\"2\" fill=\"#1D5A40\"/><rect x=\"20\" y=\"53\" width=\"24\" height=\"6\" rx=\"3\" fill=\"#1D5A40\"/><rect x=\"27\" y=\"13\" width=\"10\" height=\"3\" rx=\"1.5\" fill=\"#fff\" opacity=\".7\"/><rect x=\"27\" y=\"20\" width=\"10\" height=\"3\" rx=\"1.5\" fill=\"#fff\" opacity=\".7\"/></g></g></svg>", "chat": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M8 22a14 14 0 0 1 14-14h20a14 14 0 0 1 14 14v8a14 14 0 0 1-14 14H26l-12 10 2-11a14 14 0 0 1-8-13z\" fill=\"#7CC8FF\"/><circle cx=\"22\" cy=\"26\" r=\"3.5\" fill=\"#fff\"/><circle cx=\"32\" cy=\"26\" r=\"3.5\" fill=\"#fff\"/><circle cx=\"42\" cy=\"26\" r=\"3.5\" fill=\"#fff\"/></g></g></svg>", "check": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M32 4l7 5 9-1 3 8 8 4-1 9 5 7-5 7 1 9-8 4-3 8-9-1-7 5-7-5-9 1-3-8-8-4 1-9-5-7 5-7-1-9 8-4 3-8 9 1z\" fill=\"#6FD6AE\"/><path d=\"M21 33l7 7 15-16\" fill=\"none\" stroke=\"#fff\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g></g></svg>", "cards": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"6\" y=\"14\" width=\"30\" height=\"40\" rx=\"8\" transform=\"rotate(-12 21 34)\" fill=\"#FFD447\"/><rect x=\"26\" y=\"10\" width=\"30\" height=\"40\" rx=\"8\" transform=\"rotate(10 41 30)\" fill=\"#FFFFFF\"/><text x=\"41\" y=\"37\" text-anchor=\"middle\" transform=\"rotate(10 41 30)\" font-family=\"Unbounded,Arial Black,sans-serif\" font-weight=\"900\" font-size=\"15\" fill=\"#8C7BFF\">Aa</text></g></g></svg>", "quiz": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><circle cx=\"32\" cy=\"32\" r=\"25\" fill=\"#8C7BFF\"/><path d=\"M24 25a8 8 0 1 1 12 7c-3 2-4 3-4 7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"6\" stroke-linecap=\"round\"/><circle cx=\"32\" cy=\"48\" r=\"3.8\" fill=\"#fff\"/></g></g></svg>", "clip": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"14\" y=\"10\" width=\"34\" height=\"46\" rx=\"9\" fill=\"#FFFFFF\"/><path d=\"M38 10h10v10z\" fill=\"#E7E2D6\"/><path d=\"M24 34V20a6 6 0 0 1 12 0v18a10 10 0 0 1-20 0V24\" fill=\"none\" stroke=\"#4AA6F0\" stroke-width=\"5\" stroke-linecap=\"round\"/></g></g></svg>", "link": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"6\" y=\"22\" width=\"30\" height=\"20\" rx=\"10\" transform=\"rotate(-35 21 32)\" fill=\"none\" stroke=\"#3FB68A\" stroke-width=\"7\"/><rect x=\"28\" y=\"22\" width=\"30\" height=\"20\" rx=\"10\" transform=\"rotate(-35 43 32)\" fill=\"none\" stroke=\"#8C7BFF\" stroke-width=\"7\"/></g></g></svg>", "receipt": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M14 6h36v52l-6-4-6 4-6-4-6 4-6-4-6 4z\" fill=\"#FFFFFF\"/><rect x=\"21\" y=\"16\" width=\"22\" height=\"4\" rx=\"2\" fill=\"#DCD6CC\"/><rect x=\"21\" y=\"25\" width=\"16\" height=\"4\" rx=\"2\" fill=\"#DCD6CC\"/><circle cx=\"40\" cy=\"40\" r=\"10\" fill=\"#6FD6AE\"/><path d=\"M35 40l4 4 6-7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g></g></svg>", "trophy": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M18 8h28v14a14 14 0 0 1-28 0z\" fill=\"#FFD447\"/><path d=\"M18 13H9a10 10 0 0 0 11 13M46 13h9a10 10 0 0 1-11 13\" fill=\"none\" stroke=\"#F2B21C\" stroke-width=\"5\" stroke-linecap=\"round\"/><rect x=\"28\" y=\"34\" width=\"8\" height=\"10\" fill=\"#F2B21C\"/><rect x=\"18\" y=\"44\" width=\"28\" height=\"12\" rx=\"5\" fill=\"#1D5A40\"/><rect x=\"25\" y=\"13\" width=\"5\" height=\"11\" rx=\"2.5\" fill=\"#fff\" opacity=\".6\"/></g></g></svg>", "cap": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M4 26l28-13 28 13-28 13z\" fill=\"#1D5A40\"/><path d=\"M16 32v10c0 5 7 9 16 9s16-4 16-9V32l-16 8z\" fill=\"#123F2B\"/><path d=\"M54 29v14\" stroke=\"#F2B21C\" stroke-width=\"3\" stroke-linecap=\"round\"/><circle cx=\"54\" cy=\"46\" r=\"4\" fill=\"#FFD447\"/></g></g></svg>", "star": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M32 5l8.3 16.8 18.5 2.7-13.4 13 3.2 18.4L32 47.2l-16.6 8.7 3.2-18.4-13.4-13 18.5-2.7z\" fill=\"#FFD447\" stroke=\"#FFD447\" stroke-width=\"4\" stroke-linejoin=\"round\"/></g></g></svg>", "clock": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><circle cx=\"32\" cy=\"34\" r=\"24\" fill=\"#FFFFFF\"/><circle cx=\"32\" cy=\"34\" r=\"24\" fill=\"none\" stroke=\"#FF6FB5\" stroke-width=\"5\"/><path d=\"M32 20v15l9 6\" fill=\"none\" stroke=\"#1D5A40\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><rect x=\"26\" y=\"3\" width=\"12\" height=\"7\" rx=\"3\" fill=\"#FF6FB5\"/></g></g></svg>", "sunrise": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M12 44a20 20 0 0 1 40 0z\" fill=\"#FFD447\"/><rect x=\"6\" y=\"44\" width=\"52\" height=\"8\" rx=\"4\" fill=\"#7CC8FF\"/><path d=\"M32 10v7M14 20l5 5M50 20l-5 5\" stroke=\"#FF9A3D\" stroke-width=\"5\" stroke-linecap=\"round\"/></g></g></svg>", "sun": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(0 32 32)\"/><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(45 32 32)\"/><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(90 32 32)\"/><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(135 32 32)\"/><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(180 32 32)\"/><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(225 32 32)\"/><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(270 32 32)\"/><rect x=\"29\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\" fill=\"#FF9A3D\" transform=\"rotate(315 32 32)\"/><circle cx=\"32\" cy=\"32\" r=\"15\" fill=\"#FFD447\"/></g></g></svg>", "moon": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M40 6a26 26 0 1 0 18 40A22 22 0 0 1 40 6z\" fill=\"#8C7BFF\"/><path d=\"M48 14l1.6 3.4 3.4 1.6-3.4 1.6L48 24l-1.6-3.4L43 19l3.4-1.6z\" fill=\"#FFD447\"/></g></g></svg>", "pin": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><circle cx=\"32\" cy=\"22\" r=\"15\" fill=\"#FF6B5B\"/><path d=\"M30 34h4l-2 24z\" fill=\"#1D5A40\"/><circle cx=\"27\" cy=\"17\" r=\"4.5\" fill=\"#fff\" opacity=\".6\"/></g></g></svg>", "rocket": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M32 4c11 7 15 20 13 34H19C17 24 21 11 32 4z\" fill=\"#FFFFFF\"/><circle cx=\"32\" cy=\"22\" r=\"6\" fill=\"#7CC8FF\"/><path d=\"M19 30l-9 12 10 1zM45 30l9 12-10 1z\" fill=\"#FF6FB5\"/><path d=\"M25 40h14l-3 10h-8z\" fill=\"#FF9A3D\"/><path d=\"M28 50h8l-4 9z\" fill=\"#FFD447\"/></g></g></svg>", "planet": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><circle cx=\"32\" cy=\"32\" r=\"18\" fill=\"#6FD6AE\"/><ellipse cx=\"32\" cy=\"34\" rx=\"29\" ry=\"9\" fill=\"none\" stroke=\"#8C7BFF\" stroke-width=\"5\" transform=\"rotate(-18 32 34)\"/><circle cx=\"26\" cy=\"25\" r=\"4\" fill=\"#fff\" opacity=\".55\"/></g></g></svg>", "crown": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M8 22l12 10 12-18 12 18 12-10-5 30H13z\" fill=\"#FFD447\"/><rect x=\"13\" y=\"46\" width=\"38\" height=\"9\" rx=\"4\" fill=\"#F2B21C\"/><circle cx=\"32\" cy=\"38\" r=\"4.5\" fill=\"#FF6FB5\"/><circle cx=\"20\" cy=\"40\" r=\"3\" fill=\"#6FD6AE\"/><circle cx=\"44\" cy=\"40\" r=\"3\" fill=\"#8C7BFF\"/></g></g></svg>", "bolt": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M37 4L12 36h16l-4 24 26-34H34z\" fill=\"#FFD447\" stroke=\"#FFD447\" stroke-width=\"3\" stroke-linejoin=\"round\"/></g></g></svg>", "heart": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M32 56S6 41 6 22A13 13 0 0 1 32 15a13 13 0 0 1 26 7c0 19-26 34-26 34z\" fill=\"#FF6FB5\"/><ellipse cx=\"19\" cy=\"21\" rx=\"5\" ry=\"3.5\" fill=\"#fff\" opacity=\".55\" transform=\"rotate(-30 19 21)\"/></g></g></svg>", "gem": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M16 10h32l12 15-28 32L4 25z\" fill=\"#7CC8FF\"/><path d=\"M4 25h56L32 57z\" fill=\"#4AA6F0\"/><path d=\"M16 10l8 15 8-15 8 15 8-15\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" opacity=\".6\"/></g></g></svg>", "globe": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><circle cx=\"32\" cy=\"32\" r=\"25\" fill=\"#7CC8FF\"/><path d=\"M15 20c6 0 8 5 13 4s5 6 1 9-9 2-10 8-5 2-6-4 0-11 2-17zM40 12c2 5 8 5 11 9s-1 9-5 9-6-4-9-2-5-3-3-7 4-6 6-9z\" fill=\"#C9EE4F\"/></g></g></svg>", "cat": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M12 22l2-16 12 10h12l12-10 2 16c4 5 5 10 5 15 0 12-11 20-25 20S7 49 7 37c0-5 1-10 5-15z\" fill=\"#FF9A3D\"/><circle cx=\"23\" cy=\"36\" r=\"3.5\" fill=\"#153E2D\"/><circle cx=\"41\" cy=\"36\" r=\"3.5\" fill=\"#153E2D\"/><path d=\"M29 43l3 3 3-3z\" fill=\"#E24D97\"/></g></g></svg>", "ruler": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M8 56V10l46 46z\" fill=\"#FFD447\"/><path d=\"M18 46V34l12 12z\" fill=\"#FFF3C4\"/><path d=\"M8 20h6M8 30h6M8 40h6M18 56v-6M28 56v-6M38 56v-6\" stroke=\"#F2B21C\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></g></g></svg>", "chart": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"8\" y=\"34\" width=\"12\" height=\"22\" rx=\"4\" fill=\"#8C7BFF\"/><rect x=\"26\" y=\"22\" width=\"12\" height=\"34\" rx=\"4\" fill=\"#FF6FB5\"/><rect x=\"44\" y=\"10\" width=\"12\" height=\"46\" rx=\"4\" fill=\"#C9EE4F\"/></g></g></svg>", "card": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"4\" y=\"14\" width=\"56\" height=\"38\" rx=\"10\" fill=\"#8C7BFF\"/><rect x=\"4\" y=\"22\" width=\"56\" height=\"8\" fill=\"#1D5A40\"/><rect x=\"12\" y=\"38\" width=\"18\" height=\"6\" rx=\"3\" fill=\"#fff\" opacity=\".8\"/></g></g></svg>", "home": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M6 30L32 8l26 22v22a6 6 0 0 1-6 6H12a6 6 0 0 1-6-6z\" fill=\"#FFFFFF\"/><path d=\"M2 31L32 6l30 25-4 5L32 14 6 36z\" fill=\"#FF6FB5\"/><rect x=\"25\" y=\"38\" width=\"14\" height=\"20\" rx=\"4\" fill=\"#C9EE4F\"/></g></g></svg>", "brain": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><path d=\"M22 10a10 10 0 0 0-10 10 10 10 0 0 0-4 17 10 10 0 0 0 10 14 10 10 0 0 0 14 3V12a10 10 0 0 0-10-2z\" fill=\"#FF6FB5\"/><path d=\"M42 10a10 10 0 0 1 10 10 10 10 0 0 1 4 17 10 10 0 0 1-10 14 10 10 0 0 1-14 3V12a10 10 0 0 1 10-2z\" fill=\"#FF8CC4\"/></g></g></svg>", "calc": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"12\" y=\"6\" width=\"40\" height=\"52\" rx=\"10\" fill=\"#8C7BFF\"/><rect x=\"18\" y=\"12\" width=\"28\" height=\"12\" rx=\"4\" fill=\"#C9EE4F\"/><rect x=\"18\" y=\"30\" width=\"8\" height=\"7\" rx=\"2.5\" fill=\"#fff\"/><rect x=\"28\" y=\"30\" width=\"8\" height=\"7\" rx=\"2.5\" fill=\"#fff\"/><rect x=\"38\" y=\"30\" width=\"8\" height=\"7\" rx=\"2.5\" fill=\"#fff\"/><rect x=\"18\" y=\"40\" width=\"8\" height=\"7\" rx=\"2.5\" fill=\"#fff\"/><rect x=\"28\" y=\"40\" width=\"8\" height=\"7\" rx=\"2.5\" fill=\"#fff\"/><rect x=\"38\" y=\"40\" width=\"8\" height=\"7\" rx=\"2.5\" fill=\"#fff\"/><rect x=\"18\" y=\"49\" width=\"18\" height=\"5\" rx=\"2.5\" fill=\"#fff\"/><rect x=\"38\" y=\"49\" width=\"8\" height=\"5\" rx=\"2.5\" fill=\"#FF6FB5\"/></g></g></svg>", "percent": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><circle cx=\"32\" cy=\"32\" r=\"26\" fill=\"#FF6FB5\"/><circle cx=\"23\" cy=\"23\" r=\"6\" fill=\"#fff\"/><circle cx=\"41\" cy=\"41\" r=\"6\" fill=\"#fff\"/><path d=\"M42 20L22 44\" stroke=\"#fff\" stroke-width=\"5.5\" stroke-linecap=\"round\"/></g></g></svg>", "scale": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"29\" y=\"10\" width=\"6\" height=\"40\" rx=\"3\" fill=\"#1D5A40\"/><rect x=\"18\" y=\"50\" width=\"28\" height=\"7\" rx=\"3.5\" fill=\"#1D5A40\"/><rect x=\"8\" y=\"14\" width=\"48\" height=\"5\" rx=\"2.5\" fill=\"#1D5A40\"/><path d=\"M4 36l8-16 8 16a8 5 0 0 1-16 0z\" fill=\"#8C7BFF\"/><path d=\"M44 36l8-16 8 16a8 5 0 0 1-16 0z\" fill=\"#6FD6AE\"/></g></g></svg>", "times": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"6\" y=\"6\" width=\"52\" height=\"52\" rx=\"14\" fill=\"#6FD6AE\"/><path d=\"M22 22l20 20M42 22L22 42\" stroke=\"#fff\" stroke-width=\"7\" stroke-linecap=\"round\"/></g></g></svg>", "power": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"6\" y=\"10\" width=\"52\" height=\"44\" rx=\"14\" fill=\"#FF9A3D\"/><text x=\"28\" y=\"44\" text-anchor=\"middle\" font-family=\"Unbounded,Arial Black,sans-serif\" font-weight=\"900\" font-size=\"24\" fill=\"#fff\">x</text><text x=\"44\" y=\"30\" text-anchor=\"middle\" font-family=\"Unbounded,Arial Black,sans-serif\" font-weight=\"900\" font-size=\"14\" fill=\"#fff\">2</text></g></g></svg>", "dice": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"8\" y=\"8\" width=\"48\" height=\"48\" rx=\"13\" fill=\"#FFFFFF\" transform=\"rotate(-8 32 32)\"/><circle cx=\"21\" cy=\"21\" r=\"4.5\" fill=\"#8C7BFF\" transform=\"rotate(-8 32 32)\"/><circle cx=\"43\" cy=\"21\" r=\"4.5\" fill=\"#8C7BFF\" transform=\"rotate(-8 32 32)\"/><circle cx=\"32\" cy=\"32\" r=\"4.5\" fill=\"#8C7BFF\" transform=\"rotate(-8 32 32)\"/><circle cx=\"21\" cy=\"43\" r=\"4.5\" fill=\"#8C7BFF\" transform=\"rotate(-8 32 32)\"/><circle cx=\"43\" cy=\"43\" r=\"4.5\" fill=\"#8C7BFF\" transform=\"rotate(-8 32 32)\"/></g></g></svg>", "graph": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\"ci\"><g filter=\"url(#claySh)\"><g filter=\"url(#clay)\"><rect x=\"6\" y=\"8\" width=\"52\" height=\"48\" rx=\"12\" fill=\"#FFFFFF\"/><path d=\"M14 46c8-2 10-16 18-18s10 6 18-14\" fill=\"none\" stroke=\"#8C7BFF\" stroke-width=\"5\" stroke-linecap=\"round\"/><circle cx=\"50\" cy=\"14\" r=\"4.5\" fill=\"#FF6FB5\"/></g></g></svg>"};
+</script>
+<script>/* Mr.Sam Stories: кружки-сторис и полноэкранный просмотр со свайпами.
+   MrSamStories.row(container, items, opts)  рисует ряд кружков
+   MrSamStories.open(items, index, opts)     открывает просмотр
+   item: { id, kind: "result" | "tip", name, exam: "ielts"|"toefl"|"math", score, res, ctx, sec:{R,L,S,W}, ask, did, quote, who, isNew,
+           title, lines:[...], badge }   (tip: title + lines)
+   opts: { seenKey, cta:{ text, href }, onView(item) } */
+(function () {
+  "use strict";
+  const DUR = 7000;
+  const EX = {
+    ielts: { name: "IELTS", full: "IELTS Academic", max: 9, min: 0, theme: "violet" },
+    toefl: { name: "TOEFL", full: "TOEFL iBT", max: 6, min: 1, theme: "pink" },
+    math: { name: "балл", full: "Математика", max: 100, min: 0, theme: "yellow" }
+  };
+  const SEC = { R: "Reading", L: "Listening", S: "Speaking", W: "Writing" };
+  const LEVELS = ["A2", "B1", "B2", "C1", "C2"];
+  // IELTS: общепринятое соответствие CEFR. TOEFL: шкала ETS 1–6 (2026).
+  function cefr(exam, v) {
+    if (v == null || isNaN(v)) return null;
+    if (exam === "ielts") return v >= 8.5 ? "C2" : v >= 7 ? "C1" : v >= 5.5 ? "B2" : v >= 4 ? "B1" : "A2";
+    if (exam === "toefl") return v >= 6 ? "C2" : v >= 5 ? "C1" : v >= 4 ? "B2" : v >= 3 ? "B1" : "A2";
+    return null;
+  }
+  // общие описания уровней CEFR
+  const MEAN = {
+    B2: "Уверенный английский: понимаешь лекции, споришь на сложные темы и пишешь эссе. Этого хватает для многих программ бакалавриата.",
+    C1: "Продвинутый уровень: свободно учишься и общаешься на английском, понимаешь длинные сложные тексты. Такой уровень просят многие сильные программы.",
+    C2: "Уровень свободного владения в академической среде: почти как у носителя."
+  };
+  const OLD_TOEFL = { 4.5: "86+", 5: "95+" }; // сопоставимый балл по старой шкале 0–120 (ETS)
+
+  const h = (tag, attrs, ...kids) => {
+    const n = document.createElement(tag);
+    for (const k in attrs || {}) {
+      const v = attrs[k]; if (v == null || v === false) continue;
+      if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else if (k === "html") n.innerHTML = v;
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    kids.flat().forEach(c => c != null && c !== false && n.append(c));
+    return n;
+  };
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)) || []; } catch (e) { return []; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const reduced = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } };
+  const fmt = (exam, v) => exam === "math" ? String(v) : Number(v).toFixed(1);
+  const theme = it => it.theme || (EX[it.exam] || {}).theme || "lime";
+  const ring = it => it.ring ? it.ring : it.kind === "tip" ? (it.badge || "★") : it.score != null ? fmt(it.exam, it.score) : (it.res || "").split(" ")[0];
+
+  function row(container, items, opts) {
+    opts = opts || {};
+    const seen = new Set(store.get(opts.seenKey || "mrsam.stories.seen"));
+    const list = h("div", { class: "ms-row", role: "list" });
+    items.forEach((it, i) => {
+      const b = h("button", { type: "button", class: "ms-item t-" + theme(it) + (seen.has(it.id) ? " seen" : ""), role: "listitem", "aria-label": "Сторис: " + (it.kind === "tip" ? it.title : it.name + ", " + (it.res || "")) },
+        h("span", { class: "ms-ring" }, h("span", { class: "ms-in" }, h("b", {}, ring(it)), it.exam && it.kind !== "tip" ? h("small", {}, (EX[it.exam] || {}).name) : null), it.isNew || it.fresh ? h("span", { class: "ms-new" }, "new") : null),
+        h("span", { class: "ms-name" }, it.kind === "tip" ? it.short || it.title : it.name));
+      b.addEventListener("click", () => open(items, i, Object.assign({}, opts, { onSeen: id => { b.classList.add("seen"); } })));
+      list.append(b);
+    });
+    container.replaceChildren(list);
+    return list;
+  }
+
+  function slide(it, opts) {
+    const ex = EX[it.exam] || null;
+    const card = h("div", { class: "ms-slide t-" + theme(it) });
+    card.append(h("span", { class: "ms-blob b1", "aria-hidden": "true" }), h("span", { class: "ms-blob b2", "aria-hidden": "true" }));
+    if (it.kind === "tip") {
+      card.append(h("div", { class: "ms-body" },
+        h("span", { class: "ms-kicker" }, it.kicker || "Совет от Самира"),
+        h("h3", { class: "ms-title" }, it.title),
+        h("ol", { class: "ms-lines" }, (it.lines || []).map((l, i) => h("li", { style: "--d:" + (i * 0.12 + 0.15) + "s" }, l)))));
+      return card;
+    }
+    const v = it.score;
+    const lvl = ex ? cefr(it.exam, v) : null;
+    const big = h("div", { class: "ms-score" }, h("span", { class: "ms-exam" }, ex ? ex.full : "Результат"), h("b", { "data-to": v != null ? v : "", "data-exam": it.exam || "" }, v != null ? fmt(it.exam, v) : it.res));
+    const body = h("div", { class: "ms-body" }, big);
+    const chips = h("div", { class: "ms-chips" });
+    if (lvl) chips.append(h("span", { class: "ms-glass" }, "Уровень " + lvl));
+    if (it.exam === "toefl" && OLD_TOEFL[v]) chips.append(h("span", { class: "ms-glass" }, "≈ " + OLD_TOEFL[v] + " из 120 по старой шкале"));
+    if (it.months) chips.append(h("span", { class: "ms-glass" }, it.months < 1 ? "за 3 недели" : "за " + it.months + " мес."));
+    if (chips.children.length) body.append(chips);
+    if (lvl) {
+      const k = LEVELS.indexOf(lvl);
+      body.append(h("div", { class: "ms-scale", role: "img", "aria-label": "Шкала CEFR, уровень " + lvl },
+        LEVELS.map((L, i) => h("span", { class: i < k ? "on" : i === k ? "on cur" : "" }, h("i"), h("small", {}, L)))));
+      if (MEAN[lvl] && !it.ask && !it.quote && !it.did) body.append(h("div", { class: "ms-note" }, h("p", {}, h("small", {}, "Что значит " + lvl), MEAN[lvl])));
+
+    }
+    const sec = it.sec ? Object.keys(SEC).filter(k => it.sec[k] != null) : [];
+    if (sec.length && ex) {
+      body.append(h("div", { class: "ms-secs" }, sec.map((k, i) => {
+        const val = it.sec[k], pct = Math.max(6, Math.min(100, (val - ex.min) / (ex.max - ex.min) * 100));
+        return h("div", { class: "ms-sec" }, h("span", {}, SEC[k]), h("span", { class: "ms-bar" }, h("i", { style: "--w:" + pct + "%;--d:" + (0.2 + i * 0.12) + "s" })), h("b", {}, fmt(it.exam, val)));
+      })));
+    }
+    const txt = it.quote ? "«" + it.quote + "»" : it.did ? it.did : null;
+    if (it.ask || txt) body.append(h("div", { class: "ms-note" }, it.ask ? h("p", {}, h("small", {}, "Запрос"), it.ask) : null, txt ? h("p", {}, h("small", {}, it.quote ? "Отзыв" : "Что сделали"), txt) : null));
+    card.append(body);
+    return card;
+  }
+
+  function countUp(el) {
+    const to = parseFloat(el.dataset.to); if (isNaN(to) || reduced()) return;
+    const ex = el.dataset.exam, from = ex === "math" ? 0 : to * 0.55, t0 = performance.now(), D = 900;
+    const tick = t => { const k = Math.min(1, (t - t0) / D), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(ex, ex === "math" ? Math.round(from + (to - from) * e) : Math.round((from + (to - from) * e) * 2) / 2); if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }
+
+  let current = null;
+  function open(items, start, opts) {
+    opts = opts || {};
+    if (current) current.close();
+    const key = opts.seenKey || "mrsam.stories.seen";
+    const prevFocus = document.activeElement;
+    let i = start || 0, t0 = 0, elapsed = 0, paused = false, raf = 0;
+    const bars = h("div", { class: "ms-bars" }, items.map(() => h("span", {}, h("i"))));
+    const who = h("div", { class: "ms-who" });
+    const close = h("button", { type: "button", class: "ms-x", "aria-label": "Закрыть сторис", html: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' });
+    const stage = h("div", { class: "ms-stage", "aria-live": "polite" });
+    const prevB = h("button", { type: "button", class: "ms-nav prev", "aria-label": "Предыдущая" });
+    const nextB = h("button", { type: "button", class: "ms-nav next", "aria-label": "Следующая" });
+    const cta = opts.cta ? h("a", { class: "ms-cta", href: opts.cta.href || "#" }, opts.cta.text) : null;
+    if (cta) cta.addEventListener("click", e => { if (opts.cta.onClick) { e.preventDefault(); opts.cta.onClick(); } api.close(); });
+    const card = h("div", { class: "ms-card", role: "dialog", "aria-modal": "true", "aria-label": "Сторис учеников Mr.Sam" }, bars, h("div", { class: "ms-top" }, who, close), stage, prevB, nextB, cta);
+    const ov = h("div", { class: "ms-ov" }, card);
+    document.body.append(ov); document.documentElement.classList.add("ms-lock");
+    requestAnimationFrame(() => ov.classList.add("in"));
+
+    const seen = new Set(store.get(key));
+    function show(n) {
+      i = n; elapsed = 0; t0 = performance.now();
+      const it = items[i];
+      [...bars.children].forEach((b, k) => { b.className = k < i ? "done" : k === i ? "now" : ""; b.firstChild.style.width = k < i ? "100%" : "0%"; });
+      who.replaceChildren(it.kind === "tip" && opts.samirClass ? h("span", { class: "ms-ava " + opts.samirClass, "aria-hidden": "true" }) : h("span", { class: "ms-ava t-" + theme(it) }, it.kind === "tip" ? "S" : (it.name || "?")[0]), h("span", {}, h("b", {}, it.kind === "tip" ? "Самир" : it.name), h("small", {}, it.kind === "tip" ? "Mr.Sam" : it.who || (EX[it.exam] || {}).full || "")));
+      const s = slide(it, opts);
+      stage.replaceChildren(s);
+      const sc = s.querySelector(".ms-score b[data-to]"); if (sc) countUp(sc);
+      if (!seen.has(it.id)) { seen.add(it.id); store.set(key, [...seen]); }
+      if (opts.onSeen) opts.onSeen(it.id);
+      if (opts.onView) opts.onView(it, i);
+    }
+    function loop(t) {
+      if (!paused) {
+        const k = Math.min(1, (elapsed + (t - t0)) / DUR);
+        bars.children[i].firstChild.style.width = (k * 100) + "%";
+        if (k >= 1) { if (i < items.length - 1) show(i + 1); else return api.close(); }
+      }
+      raf = requestAnimationFrame(loop);
+    }
+    const pause = () => { if (!paused) { paused = true; elapsed += performance.now() - t0; card.classList.add("paused"); } };
+    const resume = () => { if (paused) { paused = false; t0 = performance.now(); card.classList.remove("paused"); } };
+    const next = () => i < items.length - 1 ? show(i + 1) : api.close();
+    const prev = () => show(Math.max(0, i - 1));
+
+    // жесты: тап по краям, удержание = пауза, свайп влево/вправо/вниз
+    let sx = 0, sy = 0, st = 0, moved = false, holdT = 0;
+    card.addEventListener("pointerdown", e => { if (e.target.closest(".ms-x,.ms-cta")) return; sx = e.clientX; sy = e.clientY; st = Date.now(); moved = false; holdT = setTimeout(pause, 220); });
+    card.addEventListener("pointermove", e => { if (Math.abs(e.clientX - sx) > 12 || Math.abs(e.clientY - sy) > 12) moved = true; });
+    card.addEventListener("pointerup", e => {
+      clearTimeout(holdT); const dx = e.clientX - sx, dy = e.clientY - sy, long = Date.now() - st > 220; resume();
+      if (e.target.closest(".ms-x,.ms-cta")) return;
+      if (moved) { if (dy > 80 && Math.abs(dy) > Math.abs(dx)) return api.close(); if (dx < -50) return next(); if (dx > 50) return prev(); return; }
+      if (long) return;
+      const r = card.getBoundingClientRect(); (e.clientX - r.left < r.width * 0.32 ? prev : next)();
+    });
+    card.addEventListener("pointercancel", () => { clearTimeout(holdT); resume(); });
+    prevB.addEventListener("click", e => { e.stopPropagation(); }); nextB.addEventListener("click", e => { e.stopPropagation(); });
+    prevB.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); prev(); } });
+    nextB.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); next(); } });
+    close.addEventListener("click", () => api.close());
+    ov.addEventListener("click", e => { if (e.target === ov) api.close(); });
+    const onKey = e => {
+      if (e.key === "Escape") api.close(); else if (e.key === "ArrowRight") next(); else if (e.key === "ArrowLeft") prev();
+      else if (e.key === " " && e.target === document.body) { e.preventDefault(); paused ? resume() : pause(); }
+      else if (e.key === "Tab") { const f = [...card.querySelectorAll("button,a[href]")]; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
+    };
+    const onVis = () => document.hidden ? pause() : resume();
+    document.addEventListener("keydown", onKey); document.addEventListener("visibilitychange", onVis);
+    const api = current = {
+      close() {
+        cancelAnimationFrame(raf); document.removeEventListener("keydown", onKey); document.removeEventListener("visibilitychange", onVis);
+        ov.classList.remove("in"); document.documentElement.classList.remove("ms-lock");
+        setTimeout(() => ov.remove(), reduced() ? 0 : 220); current = null;
+        if (prevFocus && prevFocus.focus) prevFocus.focus({ preventScroll: true });
+        if (opts.onClose) opts.onClose();
+      }
+    };
+    show(i); close.focus({ preventScroll: true }); raf = requestAnimationFrame(loop);
+    return api;
+  }
+
+  window.MrSamStories = { row, open, cefr, EX };
+})();
 </script>
 <script>
 /* =====================================================================
@@ -1607,7 +1957,7 @@ const CONFIG = {
   function avatarEl(p, cls) { return h("span", { class: "avatar" + (cls ? " " + cls : ""), "aria-hidden": "true" }, avatarNode(p)); }
   /* сохранение: локально сразу, на сервер Самира с паузой 2 сек (черновики домашки, настройки) */
   let stateT = null;
-  function statePayload() { const p = S.profile; return { at: Date.now(), hw: S.hw || {}, bookings: S.bookings || [], prefs: { avatar: p.avatar, theme: p.theme, targets: p.targets, goal: p.goal, examDate: p.examDate, track: p.track, avatarSet: p.avatarSet, themeSet: p.themeSet, trackSet: p.trackSet } }; }
+  function statePayload() { const p = S.profile; return { at: Date.now(), hw: S.hw || {}, bookings: S.bookings || [], game: S.game || null, prefs: { avatar: p.avatar, theme: p.theme, targets: p.targets, goal: p.goal, examDate: p.examDate, track: p.track, avatarSet: p.avatarSet, themeSet: p.themeSet, trackSet: p.trackSet } }; }
   function flushState() {
     clearTimeout(stateT); stateT = null;
     if (!CONFIG.api || demo || !S || !S.profile.code || !S.token) return;
@@ -1622,6 +1972,7 @@ const CONFIG = {
     if (!st.at || st.at <= (S.stateAt || 0)) return;
     S.hw = S.hw || {};
     Object.entries(st.hw || {}).forEach(([id, srv]) => { const loc = S.hw[id]; if (!loc || (srv.ts || 0) > (loc.ts || 0)) S.hw[id] = srv; });
+    if (st.game && st.game.ach) { S.game = S.game || {}; S.game.ach = Object.assign({}, st.game.ach, S.game.ach || {}); S.game.lvl = Math.max(S.game.lvl || 0, st.game.lvl || 0); }
     const p = S.profile, pr = st.prefs || {};
     ["avatar", "theme", "goal", "examDate"].forEach(k => { if (pr[k] != null) p[k] = pr[k]; });
     if (pr.targets) p.targets = Object.assign({}, p.targets, pr.targets);
@@ -2169,7 +2520,10 @@ const CONFIG = {
     const d = data(), tr = tracks();
     if (!chartExam || !tr.includes(chartExam)) { const last = d.attempts.filter(a => tr.includes(a.exam)).pop(); chartExam = last ? last.exam : tr[0]; }
     const grid = h("div", { class: "ov-grid" });
+    const stories = storiesStrip(tr);
+    if (stories) grid.append(stories);
     grid.append(heroCard(chartExam));
+    gameRow().forEach(c => grid.append(c));
     grid.append(planCard());
     tr.forEach(ex => { const c = examCard(ex, tr.length === 1 ? "span-8" : "span-4"); if (tr.length === 1) c.append(recentBlock(ex)); grid.append(c); });
 
@@ -2200,9 +2554,110 @@ const CONFIG = {
     const week = mine.filter(a => Date.now() - new Date(a.date) < 7 * 864e5).length;
     side.append(h("div", { class: "stats3", style: "margin-top:20px" }, h("div", {}, h("b", {}, total), h("span", {}, "тестов")), h("div", {}, h("b", {}, mins), h("span", {}, "минут")), h("div", {}, h("b", {}, week), h("span", {}, "за 7 дней"))));
     grid.append(side);
+    grid.append(achCard());
 
     app.replaceChildren(h("div", { class: "wrap" }, banner(), h("div", { style: "height:20px" }), grid));
     drawChart(box, chartExam);
+  }
+  const CABTIPS = [{"id": "t-ielts-w2", "exam": "ielts", "short": "Writing", "badge": "W2", "theme": "violet", "kicker": "IELTS · совет Самира", "title": "Эссе Task 2: план за 5 минут", "lines": ["Ответь на вопрос прямо уже во вступлении", "Два абзаца: в каждом одна идея и пример", "Вывод повторяет позицию другими словами", "Оставь 3 минуты на проверку времён и артиклей"]}, {"id": "t-ielts-r", "exam": "ielts", "short": "Reading", "badge": "R", "theme": "mint", "kicker": "IELTS · совет Самира", "title": "Reading: не читай всё подряд", "lines": ["Сначала вопросы, потом текст", "Ищи ключевые слова и их синонимы", "Not Given, если в тексте об этом нет ни слова", "Около 20 минут на секцию, не застревай"]}, {"id": "t-ielts-l", "exam": "ielts", "short": "Listening", "badge": "L", "theme": "pink", "kicker": "IELTS · совет Самира", "title": "Listening: где ловушки", "lines": ["Спикер часто поправляет себя: верен последний вариант", "Проверь лимит слов в ответе", "Цифры и даты записывай сразу", "Орфография считается: тренируй spelling"]}, {"id": "t-toefl-email", "exam": "toefl", "short": "Email", "badge": "@", "theme": "pink", "kicker": "TOEFL · совет Самира", "title": "Writing: письмо без паники", "lines": ["Цель письма в первой строке", "Ответь на каждый пункт задания", "Вежливые формулы: Could you…, I would appreciate…", "Подпись и проверка ошибок в конце"]}, {"id": "t-toefl-disc", "exam": "toefl", "short": "Discussion", "badge": "D", "theme": "violet", "kicker": "TOEFL · совет Самира", "title": "Academic Discussion", "lines": ["Прочитай мнения других участников", "Своя позиция в первом предложении", "Добавь новый аргумент, а не повтор", "Пиши 100+ слов, но без воды"]}, {"id": "t-toefl-sp", "exam": "toefl", "short": "Speaking", "badge": "S", "theme": "mint", "kicker": "TOEFL · совет Самира", "title": "Speaking: схема ответа", "lines": ["Главная мысль в первом предложении", "Причина и пример из жизни", "Связки: First, Also, That's why", "Забыл слово? Перефразируй, не молчи"]}, {"id": "t-math-pct", "exam": "math", "short": "Проценты", "badge": "%", "theme": "yellow", "kicker": "Математика · совет Самира", "title": "Проценты без ошибок", "lines": ["Процент = часть / целое × 100", "Рост на 20% значит умножить на 1,2", "Скидка 15% значит умножить на 0,85", "Два изменения подряд перемножаются"]}, {"id": "t-math-test", "exam": "math", "short": "Тест", "badge": "✓", "theme": "violet", "kicker": "Математика · совет Самира", "title": "Перед контрольной", "lines": ["Реши 5 задач по слабой теме", "Выпиши формулы на одну страницу", "Проверь ответ подстановкой", "Сначала лёгкие задачи, потом сложные"]}, {"id": "t-math-err", "exam": "math", "short": "Ошибки", "badge": "?!", "theme": "pink", "kicker": "Математика · совет Самира", "title": "Как разбирать ошибку", "lines": ["Найди шаг, где пошло не так", "Назови тип ошибки: счёт, формула или условие", "Сразу реши похожую задачу", "Вернись к теме через 2 дня"]}];
+  const CABRESULTS = [{"id": "sasha-toefl", "res": "TOEFL 5.0", "exam": "toefl", "score": 5, "ctx": "Уровень C1 по шкале ETS", "months": 0, "name": "Саша", "who": "TOEFL iBT 5.0", "sec": null, "fresh": true}, {"id": "maria-ielts", "res": "IELTS 7.5", "exam": "ielts", "score": 7.5, "ctx": "Уровень C1", "months": 0, "name": "Мария", "who": "IELTS Academic 7.5", "sec": null, "fresh": true}, {"id": "anastasia-toefl", "res": "TOEFL 4.5", "exam": "toefl", "score": 4.5, "ctx": "Уровень B2 по шкале ETS", "months": 0, "name": "Анастасия", "who": "TOEFL iBT 4.5", "sec": null, "fresh": true}, {"res": "IELTS 7.5", "ctx": "Европа и Китай", "months": 3, "ask": "Эссе: не хватало структуры и аргументов", "did": "Разобрали Writing по критериям экзамена, правили эссе каждую неделю", "name": "Александра", "who": "поступила за границу", "exam": "ielts", "score": 7.5, "id": "c0"}, {"res": "TOEFL iBT 4.5", "ctx": "Европа и Китай", "months": 5, "ask": "Грамматика: ошибки в Writing и Speaking", "did": "Закрыли пробелы в грамматике и довели навыки до формата экзамена", "name": "София", "who": "поступила за границу", "exam": "toefl", "score": 4.5, "id": "c1"}, {"res": "IELTS 7.0", "ctx": "Европа и Китай", "months": 6, "ask": "Эссе: терялись баллы за Task Response", "did": "Отработали аргументацию и структуру, писали эссе на время", "name": "Анастасия", "who": "поступила за границу", "exam": "ielts", "score": 7, "id": "c2"}, {"res": "IELTS 7.0", "ctx": "Европа и Китай", "months": 4, "ask": "Грамматика: сложные конструкции и времена", "did": "Системно прошли грамматику и перенесли её в письмо и речь", "name": "Екатерина", "who": "поступила за границу", "exam": "ielts", "score": 7, "id": "c3"}, {"res": "IELTS 8.0", "ctx": "Европа и Китай", "months": 5, "ask": "Эссе: нужен был балл 8.0 и сильный Writing", "did": "Подняли Writing до уровня 8.0, параллельно готовили документы", "name": "Максим", "who": "поступил за границу", "exam": "ielts", "score": 8, "id": "c4"}, {"res": "IELTS 7.0", "ctx": "Бюджет в Южной Корее", "months": 0.7, "quote": "Нужно было срочно сдать IELTS для поступления, сроки были ограничены. Mr.Sam сделал экспресс-подготовку за 21 день: чёткие стратегии, практика и фокус на нужных навыках.", "name": "Мавлон", "who": "поступил на бюджет в Южной Корее", "exam": "ielts", "score": 7, "id": "c5"}, {"res": "IELTS 8.0", "ctx": "Listening 9.0 · Reading 8.0", "months": 0, "quote": "Я пришёл с базовым уровнем и проблемами в Reading и Listening, не понимал тексты и терял баллы. Mr.Sam выстроил систему подготовки, мы разобрали ловушки IELTS и прокачали навыки понимания.", "name": "Эльдор", "who": "IELTS 8.0", "exam": "ielts", "score": 8, "sec": {"L": 9, "R": 8}, "id": "c6"}, {"res": "C1 за 6 месяцев", "ctx": "IELTS 7.0 · с нуля", "months": 6, "quote": "Пришёл с нуля, без базы в английском и понимания грамматики. Постепенно выстроили фундамент, вывели в разговорную речь и подготовили к экзамену.", "name": "Нурбек", "who": "с нуля до C1", "exam": "ielts", "score": 7, "id": "c7"}, {"res": "IELTS 7.0", "ctx": "Speaking 7.5", "months": 3, "quote": "Были проблемы с грамматикой и неуверенность в Speaking. Проработали грамматику и усилили разговорную речь через практику.", "name": "Сафина", "who": "IELTS 7.0", "exam": "ielts", "score": 7, "sec": {"S": 7.5}, "id": "c8"}, {"res": "89/100 и грант", "ctx": "Зарубежный вуз", "months": 6, "quote": "Я пришёл с базовым уровнем математики, не умея вычислять. За полгода с Самиром прошли всю базу, и я набрал 89/100 по математике на английском. Поступил на грант!", "name": "Эльдор", "who": "поступил за границу на грант", "exam": "math", "id": "c9", "ring": "89"}, {"res": "95 баллов", "ctx": "Бюджет СПбГУ", "months": 9, "quote": "Самир подготовил к сдаче экзамена по математике за 9 месяцев, я набрал 95 баллов и поступил на бюджет!", "name": "Джавахир", "who": "поступил в СПбГУ", "exam": "math", "id": "c10", "ring": "95"}, {"res": "С нуля за год", "ctx": "Математика + IELTS 7.0", "months": 12, "quote": "С полного нуля за год подготовил меня к сдаче внутреннего экзамена в зарубежный университет.", "name": "Иван", "who": "поступил за границу, IELTS 7.0", "exam": "ielts", "score": 7, "id": "c11"}];
+  /* ---------- игра: XP, уровни, серия, цель дня, ачивки ---------- */
+  const RANKS = ["Новичок", "Разогрев", "В потоке", "Уверенный", "Профи", "Претендент", "Почти оффер", "Легенда"];
+  const lvlStart = n => 100 * n * (n - 1) / 2;            // XP для начала уровня n: 0, 100, 300, 600, 1000…
+  function gameStats() {
+    const d = data(), tr = tracks(), p = prof();
+    const atts = d.attempts.filter(a => tr.includes(a.exam));
+    const hwSt = Object.values(d.hw || {});
+    const submitted = hwSt.filter(s => s.submitted).length;
+    let parts = 0; try { hwList().forEach(x => { parts += hwProgress(x).done; }); } catch (e) {}
+    const days = new Set(atts.map(a => dkey(a.date))); hwSt.forEach(s => (s.days || []).forEach(k => days.add(k)));
+    const hit = atts.filter(a => p.targets[a.exam] != null && scoreOf(a) >= p.targets[a.exam]).length;
+    const mins = Math.round(atts.reduce((a, b) => a + (b.duration || 0), 0) / 60);
+    const secs = new Set(atts.map(a => a.exam + ":" + a.section));
+    const hours = atts.map(a => new Date(a.date).getHours());
+    const today = dkey(Date.now());
+    const todayActs = atts.filter(a => dkey(a.date) === today).length + hwSt.filter(s => (s.days || []).includes(today)).length;
+    const xp = atts.length * 50 + hit * 30 + submitted * 80 + parts * 10 + days.size * 10;
+    let lvl = 1; while (xp >= lvlStart(lvl + 1)) lvl++;
+    return { atts: atts.length, submitted, parts, days, hit, mins, secs: secs.size, allSecs: tr.length * 3, hours, todayActs, xp, lvl, st: streak() };
+  }
+  const ACH = [
+    { id: "first", ic: "target", t: "Первый тест", d: "Пройди любой тест", ok: g => g.atts >= 1 },
+    { id: "five", ic: "star", t: "Пять тестов", d: "Пройди 5 тестов", ok: g => g.atts >= 5 },
+    { id: "ten", ic: "trophy", t: "Десятка", d: "Пройди 10 тестов", ok: g => g.atts >= 10 },
+    { id: "s3", ic: "flame", t: "Серия 3 дня", d: "Занимайся 3 дня подряд", ok: g => g.st >= 3 },
+    { id: "s7", ic: "bolt", t: "Неделя огня", d: "7 дней подряд без пропусков", ok: g => g.st >= 7 },
+    { id: "hw1", ic: "notebook", t: "Первая домашка", d: "Сдай задание Самиру", ok: g => g.submitted >= 1 },
+    { id: "hw5", ic: "check", t: "Пять домашек", d: "Сдай 5 заданий", ok: g => g.submitted >= 5 },
+    { id: "goal", ic: "crown", t: "Цель взята", d: "Набери целевой балл в тесте", ok: g => g.hit >= 1 },
+    { id: "all", ic: "gem", t: "Все разделы", d: "Reading, Listening и Writing", ok: g => g.secs >= g.allSecs },
+    { id: "night", ic: "moon", t: "Ночная смена", d: "Тест после 22:00", ok: g => g.hours.some(x => x >= 22 || x < 5) },
+    { id: "early", ic: "sunrise", t: "Ранняя пташка", d: "Тест до 9 утра", ok: g => g.hours.some(x => x >= 5 && x < 9) },
+    { id: "marathon", ic: "clock", t: "Марафонец", d: "300 минут в тестах", ok: g => g.mins >= 300 }
+  ];
+  let demoAch = null;
+  function achUnlocked(g) { return ACH.filter(a => a.ok(g)).map(a => a.id); }
+  // новые ачивки и уровень: тост и конфетти, но не при самом первом подсчёте
+  function gameCheck(g) {
+    const box = demo ? (demoAch = demoAch || {}) : (S.game = S.game || {});
+    const now = achUnlocked(g), first = !box.ach;
+    box.ach = box.ach || {};
+    const fresh = now.filter(id => !box.ach[id]);
+    fresh.forEach(id => { box.ach[id] = Date.now(); });
+    const lvlUp = box.lvl && g.lvl > box.lvl;
+    box.lvl = g.lvl;
+    if (!demo && (fresh.length || lvlUp)) saveAll();
+    if (first) return;
+    if (lvlUp) { toast("Новый уровень " + g.lvl + ": " + RANKS[Math.min(g.lvl - 1, RANKS.length - 1)] + "!"); confetti(); }
+    else if (fresh.length) { const a = ACH.find(x => x.id === fresh[0]); toast("Ачивка: " + a.t); confetti(); }
+  }
+  function ringSvg(pct, cls) {
+    const r = 42, c = 2 * Math.PI * r, v = Math.max(0, Math.min(1, pct));
+    return h("span", { class: "g-ring " + (cls || ""), html: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="' + r + '" class="g-ring-bg"/><circle cx="50" cy="50" r="' + r + '" class="g-ring-fg" stroke-dasharray="' + (c * v).toFixed(1) + ' ' + c.toFixed(1) + '"/></svg>' });
+  }
+  function gameRow() {
+    const g = gameStats(); gameCheck(g);
+    const a = lvlStart(g.lvl), b = lvlStart(g.lvl + 1), pct = (g.xp - a) / (b - a);
+    const rank = RANKS[Math.min(g.lvl - 1, RANKS.length - 1)];
+    const lvl = h("section", { class: "card g-card g-lvl span-4", "aria-label": "Уровень " + g.lvl + ", " + g.xp + " XP" },
+      h("div", { class: "g-ring-wrap" }, ringSvg(pct, "lime"), h("b", { class: "g-ring-num" }, g.lvl), h("small", { class: "g-ring-cap" }, "lvl")),
+      h("div", { class: "g-txt" }, h("span", { class: "eyebrow" }, "Уровень"), h("b", { class: "g-big" }, rank), h("span", { class: "g-sub" }, g.xp + " XP · до " + (g.lvl + 1) + " уровня ещё " + (b - g.xp)),
+        h("span", { class: "g-hint" }, "+50 за тест · +80 за домашку")));
+    const days = [];
+    for (let i = 6; i >= 0; i--) { const t = Date.now() - i * 864e5, k = dkey(t); days.push(h("span", { class: "g-day" + (g.days.has(k) ? " on" : "") + (i === 0 ? " today" : "") }, h("i", { "aria-hidden": "true" }, g.days.has(k) ? ci("flame") : null), new Date(t).toLocaleDateString("ru-RU", { weekday: "short" }).slice(0, 2))); }
+    const str = h("section", { class: "card g-card g-streak span-4", "aria-label": "Серия " + g.st + " дней" },
+      h("div", { class: "g-head" }, h("span", { class: "eyebrow" }, "Серия"), h("b", { class: "g-big" }, g.st + " " + plural(g.st, "день", "дня", "дней"))),
+      h("div", { class: "g-week" }, ...days),
+      h("span", { class: "g-sub" }, g.st ? "Не прерывай: хватит одного теста или задания в день" : "Сделай тест или задание сегодня, и серия начнётся"));
+    const goal = 2, done = Math.min(goal, g.todayActs);
+    const day = h("section", { class: "card g-card g-goal span-4", "aria-label": "Цель дня: " + done + " из " + goal },
+      h("div", { class: "g-ring-wrap sm" }, ringSvg(done / goal, done >= goal ? "lime" : "violet"), h("b", { class: "g-ring-num" }, done + "/" + goal)),
+      h("div", { class: "g-txt" }, h("span", { class: "eyebrow" }, "Цель дня"), h("b", { class: "g-big" }, done >= goal ? "Выполнено!" : "2 действия"), h("span", { class: "g-sub" }, done >= goal ? "Сегодня ты молодец. Завтра продолжим" : "Тест или задание из домашки"),
+        done < goal ? h("button", { type: "button", class: "btn btn-lime btn-sm", onclick: () => go("tests") }, "Начать", icon("arrow")) : null));
+    return [lvl, str, day];
+  }
+  let achAll = false;
+  function achCard() {
+    const g = gameStats(), on = new Set(achUnlocked(g));
+    const list = achAll ? ACH : ACH.slice().sort((x, y) => (on.has(y.id) ? 1 : 0) - (on.has(x.id) ? 1 : 0)).slice(0, 6);
+    return h("section", { class: "card g-ach span-12", "aria-labelledby": "ach-t" },
+      h("div", { class: "chart-head" }, h("h2", { id: "ach-t" }, "Ачивки ", h("span", { class: "g-count" }, on.size + " из " + ACH.length)),
+        h("button", { type: "button", class: "link", onclick: () => { achAll = !achAll; render(); } }, achAll ? "Свернуть" : "Все ачивки")),
+      h("div", { class: "g-badges" }, ...list.map(a => h("div", { class: "g-badge" + (on.has(a.id) ? " on" : ""), title: a.d },
+        h("span", { class: "g-badge-ic" }, ci(a.ic)), h("b", {}, a.t), h("small", {}, on.has(a.id) ? "получено" : a.d)))));
+  }
+
+  /* ---------- сторис в кабинете ---------- */
+  function storiesStrip(exams) {
+    const box = h("section", { class: "card g-stories span-12", "aria-label": "Сторис" });
+    const items = [];
+    (CABTIPS || []).filter(t => exams.includes(t.exam)).forEach(t => items.push(Object.assign({ kind: "tip" }, t)));
+    (CABRESULTS || []).filter(r => exams.includes(r.exam) && r.score != null).forEach(r => items.push(Object.assign({ kind: "result" }, r)));
+    if (!items.length || !window.MrSamStories) return null;
+    const row = h("div", { class: "g-st-row" });
+    box.append(h("div", { class: "g-st-head" }, h("b", {}, "Сторис"), h("small", {}, "советы Самира и результаты учеников")), row);
+    MrSamStories.row(row, items, { seenKey: "mrsam.cab.stories", samirClass: "samir-ava" });
+    return box;
   }
   function examCard(ex, span) {
     const d = data(), E = EXAMS[ex], tgt = d.profile.targets[ex];

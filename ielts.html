@@ -1040,6 +1040,33 @@ body{background:var(--bg)}
 .g-st-row{min-width:0}
 @media (max-width:640px){.g-stories{grid-template-columns:minmax(0,1fr);gap:6px;padding:14px 10px 6px 14px!important}.g-st-head{flex-direction:row;align-items:baseline;gap:10px}.g-st-head small{max-width:none}}
 @media (prefers-reduced-motion:reduce){body::before{animation:none}}
+/* ===== Mr.Sam: Новый год ===== */
+.ny-snow{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none}
+.ny-snow.back{z-index:-1}
+.ny-snow.front{z-index:26}
+.ny-garland{position:absolute;left:28px;right:28px;bottom:-15px;height:26px;pointer-events:none;z-index:2}
+.ny-garland svg{position:absolute;inset:0;overflow:visible}
+.ny-garland i{position:absolute;top:10px;width:9px;height:14px;margin-left:-4.5px;border-radius:50% 50% 46% 46%/40% 40% 60% 60%;background:var(--c);box-shadow:0 0 10px 2px var(--c),inset -2px -3px 0 rgba(0,0,0,.18);animation:nyBlink 1.35s ease-in-out infinite alternate}
+.ny-garland i::before{content:"";position:absolute;left:2px;top:-4px;width:5px;height:5px;border-radius:2px;background:#0E2219}
+.ny-garland i:nth-child(even){top:13px}
+@keyframes nyBlink{0%{opacity:1;filter:brightness(1.15)}100%{opacity:.45;box-shadow:0 0 2px 0 var(--c),inset -2px -3px 0 rgba(0,0,0,.18);filter:brightness(.85)}}
+.ny-hat::after{content:"";position:absolute;left:37%;top:-9%;width:30%;aspect-ratio:100/92;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%2092%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22r%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FF5A5F%22/%3E%3Cstop%20offset%3D%22.6%22%20stop-color%3D%22%23E0262E%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23A9141B%22/%3E%3C/linearGradient%3E%3CradialGradient%20id%3D%22w%22%20cx%3D%22.35%22%20cy%3D%22.3%22%20r%3D%22.8%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FFFFFF%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23DCE6F2%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath%20d%3D%22M14%2072%20C18%2040%2036%2014%2062%208%20C76%205%2088%2012%2092%2026%20C84%2020%2074%2020%2068%2028%20C62%2040%2070%2058%2086%2072%20Z%22%20fill%3D%22url%28%23r%29%22%20stroke%3D%22%237A0E14%22%20stroke-width%3D%222.4%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M30%2060%20C34%2040%2046%2024%2060%2018%22%20stroke%3D%22%23FF9A9E%22%20stroke-width%3D%223%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.7%22/%3E%3Crect%20x%3D%226%22%20y%3D%2266%22%20width%3D%2288%22%20height%3D%2220%22%20rx%3D%2210%22%20fill%3D%22url%28%23w%29%22%20stroke%3D%22%239FB2C8%22%20stroke-width%3D%221.6%22/%3E%3Ccircle%20cx%3D%2291%22%20cy%3D%2229%22%20r%3D%229%22%20fill%3D%22url%28%23w%29%22%20stroke%3D%22%239FB2C8%22%20stroke-width%3D%221.6%22/%3E%3C/svg%3E%0A") center/contain no-repeat;transform:rotate(17deg);transform-origin:50% 90%;pointer-events:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.18))}
+.ny-cap{position:relative}
+.ny-cap::before{content:"";position:absolute;left:0;right:0;top:0;height:20px;z-index:3;pointer-events:none;
+  background:radial-gradient(circle at 50% 0,#fff 9px,transparent 9.5px) 0 2px/22px 20px repeat-x,radial-gradient(circle at 50% 0,#fff 5px,transparent 5.5px) 11px 8px/44px 20px repeat-x,linear-gradient(#fff,#fff) 0 0/100% 7px no-repeat;
+  filter:drop-shadow(0 3px 2px rgba(60,90,140,.22))}
+.ny-toggle{position:fixed;left:14px;bottom:var(--ny-b,16px);z-index:45;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.7);color:#2C5D8F;cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 12px 28px -14px rgba(20,50,90,.55);-webkit-backdrop-filter:blur(12px) saturate(160%);backdrop-filter:blur(12px) saturate(160%);transition:transform .2s}
+.ny-toggle:hover{transform:rotate(30deg)}
+.ny-toggle.off{color:#8A9690;opacity:.75}
+.ny-toggle.off::after{content:"";position:absolute;width:26px;height:2.4px;border-radius:2px;background:currentColor;transform:rotate(-45deg)}
+.ny-toggle:focus-visible{outline:3px solid #D5F36A;outline-offset:2px}
+.ny-count{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.5);font:900 12.5px/1.15 var(--display,"Unbounded"),system-ui,sans-serif;text-transform:uppercase;color:#fff;white-space:nowrap}
+.ny-count svg{width:18px;height:18px;flex:none}
+.ny-count b{color:#FFF6B0}
+@media (prefers-reduced-motion:reduce){.ny-garland i{animation:none}}
+
+.ny-cap::before{border-top-left-radius:inherit;border-top-right-radius:inherit}
+@media (max-width:900px){.ny .ny-toggle{bottom:90px}}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -1562,7 +1589,121 @@ const CI = {"calendar": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\" class=\
 
   window.MrSamStories = { row, open, cefr, EX };
 })();
-</script>
+
+/* Mr.Sam: новогодний режим. Снег (дальний и ближний слой), гирлянда, шапка Деда Мороза на маскоте, счётчик до Нового года.
+   Подключение: MrSamNY.init({ garland: ".nav-bar", caps: ".hero", hats: true, toggleBottom: 16 }) */
+(function () {
+  "use strict";
+  const KEY = "mrsam.snow";
+  const reduced = (() => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } })();
+  const get = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+  const set = v => { try { localStorage.setItem(KEY, v); } catch (e) {} };
+  let on = get() ? get() === "1" : !reduced;
+
+  // ---------- снег ----------
+  function layer(cls, density, rMin, rMax, crystals, front) {
+    const c = document.createElement("canvas");
+    c.className = "ny-snow " + cls; c.setAttribute("aria-hidden", "true");
+    document.body.append(c);
+    const ctx = c.getContext("2d");
+    let W = 0, H = 0, dpr = 1, flakes = [];
+    const mk = (y) => {
+      const big = Math.random() < crystals;
+      const r = big ? rMax + 2 + Math.random() * 4 : rMin + Math.random() * (rMax - rMin);
+      return { x: Math.random() * W, y: y != null ? y : Math.random() * H, r, big, vy: (front ? 0.55 : 0.32) + r * 0.11 + Math.random() * 0.3, ph: Math.random() * 6.28, amp: 0.25 + Math.random() * 0.6, rot: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.01, a: front ? 0.92 : 0.65 + Math.random() * 0.35 };
+    };
+    const size = () => {
+      dpr = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+      c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.round(Math.min(density.max, W * H / density.per));
+      while (flakes.length < n) flakes.push(mk()); flakes.length = n;
+    };
+    size(); addEventListener("resize", size, { passive: true });
+    const crystal = f => {
+      ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot);
+      ctx.strokeStyle = front ? "rgba(255,255,255," + f.a + ")" : "rgba(160,192,232," + f.a + ")"; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+      ctx.beginPath();
+      for (let k = 0; k < 6; k++) {
+        ctx.rotate(Math.PI / 3); ctx.moveTo(0, 0); ctx.lineTo(0, -f.r);
+        ctx.moveTo(0, -f.r * 0.55); ctx.lineTo(f.r * 0.28, -f.r * 0.78); ctx.moveTo(0, -f.r * 0.55); ctx.lineTo(-f.r * 0.28, -f.r * 0.78);
+      }
+      ctx.stroke(); ctx.restore();
+    };
+    let t = 0, wind = 0;
+    const step = () => {
+      ctx.clearRect(0, 0, W, H); t += 0.01; wind = Math.sin(t * 0.7) * 0.35;
+      for (const f of flakes) {
+        f.y += f.vy; f.ph += 0.012; f.x += Math.sin(f.ph) * f.amp * 0.6 + wind; f.rot += f.vr;
+        if (f.y - f.r > H) Object.assign(f, mk(-10));
+        if (f.x > W + 10) f.x = -10; else if (f.x < -10) f.x = W + 10;
+        if (f.big) { crystal(f); continue; }
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283);
+        if (front) { ctx.fillStyle = "rgba(255,255,255," + f.a + ")"; ctx.fill(); ctx.strokeStyle = "rgba(150,180,222,.55)"; ctx.lineWidth = 0.8; ctx.stroke(); }
+        else { ctx.fillStyle = "rgba(160,194,236," + f.a + ")"; ctx.fill(); }
+      }
+    };
+    return { c, step, clear: () => ctx.clearRect(0, 0, W, H) };
+  }
+  let layers = [], raf = 0;
+  const loop = () => { layers.forEach(l => l.step()); raf = requestAnimationFrame(loop); };
+  function start() {
+    if (!layers.length) layers = [layer("back", { per: 5200, max: 260 }, 1.6, 4.2, 0.16, false), layer("front", { per: 16000, max: 95 }, 1.1, 2.8, 0.07, true)];
+    layers.forEach(l => l.c.hidden = false); cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+  }
+  function stop() { cancelAnimationFrame(raf); layers.forEach(l => { l.clear(); l.c.hidden = true; }); }
+  document.addEventListener("visibilitychange", () => { if (!on) return; if (document.hidden) cancelAnimationFrame(raf); else { cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); } });
+
+  // ---------- гирлянда ----------
+  const COLORS = ["#FF5A5F", "#FFD84D", "#D5F36A", "#6EC8FF", "#FF8BD1"];
+  function garland(host) {
+    if (!host || host.querySelector(":scope > .ny-garland")) return;
+    if (getComputedStyle(host).position === "static") host.style.position = "relative";
+    const g = document.createElement("div"); g.className = "ny-garland"; g.setAttribute("aria-hidden", "true");
+    host.append(g);
+    const draw = () => {
+      const w = g.clientWidth; if (!w) return;
+      const n = Math.max(6, Math.round(w / 58)), seg = w / n, sag = 10;
+      let d = "M0,2", bulbs = "";
+      for (let i = 0; i < n; i++) { const x0 = i * seg, x1 = x0 + seg; d += " Q" + (x0 + seg / 2).toFixed(1) + "," + (2 + sag * 2) + " " + x1.toFixed(1) + ",2"; }
+      for (let i = 0; i < n; i++) { const x = (i + 0.5) * seg; bulbs += '<i style="left:' + x.toFixed(1) + 'px;--c:' + COLORS[i % COLORS.length] + ';animation-delay:' + ((i % 3) * 0.45).toFixed(2) + 's"></i>'; }
+      g.innerHTML = '<svg width="' + w + '" height="26" viewBox="0 0 ' + w + ' 26"><path d="' + d + '" fill="none" stroke="#0E2219" stroke-width="1.6" opacity=".85"/></svg>' + bulbs;
+    };
+    draw(); if ("ResizeObserver" in window) new ResizeObserver(draw).observe(g);
+  }
+
+  // ---------- шапки на 3D-маскоте ----------
+  function hats() {
+    document.querySelectorAll(".m3d:not(.ny-hat),.login-m3d:not(.ny-hat)").forEach(m => {
+      if (getComputedStyle(m).position === "static") m.style.position = "relative";
+      m.classList.add("ny-hat");
+    });
+  }
+
+  // ---------- кнопка снега ----------
+  function toggle(bottom) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "ny-toggle"; b.style.setProperty("--ny-b", (bottom || 16) + "px");
+    const paint = () => { b.setAttribute("aria-pressed", on ? "true" : "false"); b.setAttribute("aria-label", on ? "Выключить снег" : "Включить снег"); b.title = on ? "Выключить снег" : "Включить снег"; b.classList.toggle("off", !on); };
+    b.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M12 5l-2.2-2M12 5l2.2-2M12 19l-2.2 2M12 19l2.2 2"/></svg>';
+    b.addEventListener("click", () => { on = !on; set(on ? "1" : "0"); paint(); on ? start() : stop(); });
+    paint(); document.body.append(b);
+  }
+
+  function daysToNY() { const n = new Date(), ny = new Date(n.getFullYear() + 1, 0, 1); return Math.ceil((ny - n) / 864e5); }
+
+  function init(o) {
+    o = o || {};
+    document.documentElement.classList.add("ny");
+    if (on) start();
+    if (o.garland) { const tryG = () => document.querySelectorAll(o.garland).forEach(garland); tryG(); new MutationObserver(tryG).observe(document.body, { childList: true, subtree: true }); }
+    if (o.hats !== false) { hats(); new MutationObserver(hats).observe(document.body, { childList: true, subtree: true }); }
+    toggle(o.toggleBottom);
+    document.querySelectorAll("[data-ny-days]").forEach(el => { const d = daysToNY(); const m10 = d % 10, m100 = d % 100; el.textContent = d + " " + (m10 === 1 && m100 !== 11 ? "день" : m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? "дня" : "дней"); });
+  }
+  window.MrSamNY = { init, daysToNY };
+})();
+
+addEventListener("DOMContentLoaded", () => MrSamNY.init({ garland: ".topbar", hats: true, toggleBottom: 16 }));</script>
 <script>
 /* =====================================================================
    БАНК ТЕСТОВ. Все тексты оригинальные учебные материалы Mr.Sam,
@@ -2493,7 +2634,7 @@ const CONFIG = {
     const right = h("div", { class: "hero-side" });
     if (p.note) right.append(h("div", { class: "sticky-note" }, h("div", { class: "note-from" }, h("span", { class: "samir-ava sm", "aria-hidden": "true" }), h("span", { class: "eyebrow" }, "Заметка от Самира")), h("p", {}, p.note)));
     right.append(h("div", { class: "hero-buddy" }, h("span", { class: "bubble" }, say), h("span", { class: "buddy-3d" }, h("span", { class: "m3d" }), ci(MOOD_ICON[mood] || "star", "buddy-badge"))));
-    return h("section", { class: "hero span-12", "aria-labelledby": "hi-t" }, left, right);
+    return h("section", { class: "hero ny-cap span-12", "aria-labelledby": "hi-t" }, left, right);
   }
   function planCard() {
     const p = prof(), items = [];
@@ -2506,7 +2647,7 @@ const CONFIG = {
     if (nx) items.push(row(ci("target"), nx.t.title, nx.cur == null ? "ещё не проходил, " + nx.t.minutes + " мин" : nx.cur >= nx.tgt ? "закрепи результат, " + nx.t.minutes + " мин" : "больше всего не хватает до цели: " + fmtScore(nx.t.exam, nx.cur) + " → " + fmtScore(nx.t.exam, nx.tgt), () => startTest(nx.t.id)));
     if (p.nextLesson) items.push(row(h("span", { class: "samir-ava sm" }), "Занятие с Самиром", fmtLesson(p.nextLesson), () => go("book")));
     else items.push(row(ci("calendar"), "Записаться на занятие", "выбери день и час в расписании", () => go("book")));
-    return h("section", { class: "card plan span-4", "aria-labelledby": "pl-t" }, h("span", { class: "eyebrow" }, "План"), h("h2", { id: "pl-t" }, "Что сделать сейчас"), h("div", { class: "plan-list" }, ...items));
+    return h("section", { class: "card plan ny-cap span-4", "aria-labelledby": "pl-t" }, h("span", { class: "eyebrow" }, "План"), h("h2", { id: "pl-t" }, "Что сделать сейчас"), h("div", { class: "plan-list" }, ...items));
   }
   function recentBlock(ex) {
     const last = data().attempts.filter(a => a.exam === ex).slice(-3).reverse();
@@ -2619,7 +2760,7 @@ const CONFIG = {
     const g = gameStats(); gameCheck(g);
     const a = lvlStart(g.lvl), b = lvlStart(g.lvl + 1), pct = (g.xp - a) / (b - a);
     const rank = RANKS[Math.min(g.lvl - 1, RANKS.length - 1)];
-    const lvl = h("section", { class: "card g-card g-lvl span-4", "aria-label": "Уровень " + g.lvl + ", " + g.xp + " XP" },
+    const lvl = h("section", { class: "card g-card g-lvl ny-cap span-4", "aria-label": "Уровень " + g.lvl + ", " + g.xp + " XP" },
       h("div", { class: "g-ring-wrap" }, ringSvg(pct, "lime"), h("b", { class: "g-ring-num" }, g.lvl), h("small", { class: "g-ring-cap" }, "lvl")),
       h("div", { class: "g-txt" }, h("span", { class: "eyebrow" }, "Уровень"), h("b", { class: "g-big" }, rank), h("span", { class: "g-sub" }, g.xp + " XP · до " + (g.lvl + 1) + " уровня ещё " + (b - g.xp)),
         h("span", { class: "g-hint" }, "+50 за тест · +80 за домашку")));

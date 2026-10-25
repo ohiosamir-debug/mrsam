@@ -1040,6 +1040,37 @@ body{background:var(--bg)}
 .g-st-row{min-width:0}
 @media (max-width:640px){.g-stories{grid-template-columns:minmax(0,1fr);gap:6px;padding:14px 10px 6px 14px!important}.g-st-head{flex-direction:row;align-items:baseline;gap:10px}.g-st-head small{max-width:none}}
 @media (prefers-reduced-motion:reduce){body::before{animation:none}}
+
+/* ===== график v2 ===== */
+.ch2-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.ch2-chip{--c:#153E2D;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid rgba(21,62,45,.12);background:#fff;color:var(--ink);font:800 14px/1 var(--font);cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.ch2-chip:hover{transform:translateY(-1px);border-color:rgba(21,62,45,.25)}
+.ch2-chip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.ch2-chip b{font:900 15px/1 var(--display,"Unbounded"),system-ui}
+.ch2-chip small{font:900 11px/1 var(--font);padding:4px 6px;border-radius:999px}
+.ch2-chip small.up{background:#E3F6D3;color:#2E7A12}
+.ch2-chip small.down{background:#FFE3DE;color:#B4361A}
+.ch2-chip.on{background:var(--c);border-color:var(--c);color:#fff}
+.ch2-chip.on i{background:#fff}
+.ch2-chip.on small.up,.ch2-chip.on small.down{background:rgba(255,255,255,.22);color:#fff}
+.ch2-wrap{position:relative}
+.ch2{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
+.ch2-ax{font:800 12px var(--font);fill:#7A8A80}
+.ch2-goal{font:900 11px var(--font);fill:#D5F36A}
+.ch2-s{transition:opacity .25s}
+.ch2-s.dim{opacity:.22}
+.ch2-line{stroke-dasharray:1;stroke-dashoffset:1;animation:ch2Draw 1s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes ch2Draw{to{stroke-dashoffset:0}}
+.ch2-pulse{transform-box:fill-box;transform-origin:center;animation:ch2Pulse 2s ease-in-out infinite}
+@keyframes ch2Pulse{50%{transform:scale(1.5);opacity:.05}}
+.ch2-tip{position:absolute;top:6px;transform:translateX(-50%);min-width:150px;padding:10px 12px;border-radius:16px;background:rgba(21,62,45,.94);color:#fff;box-shadow:0 18px 36px -18px rgba(0,0,0,.6);pointer-events:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ch2-date{font:900 11px/1 var(--display,"Unbounded"),system-ui;text-transform:uppercase;letter-spacing:.05em;color:#D5F36A;margin-bottom:8px}
+.ch2-row{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;font:800 13px/1.6 var(--font)}
+.ch2-row i{width:8px;height:8px;border-radius:50%}
+.ch2-row b{font:900 14px/1 var(--display,"Unbounded"),system-ui}
+.ch2-row.old{opacity:.55}
+@media (prefers-reduced-motion:reduce){.ch2-line{animation:none;stroke-dashoffset:0}.ch2-pulse{animation:none}}
+@media (max-width:640px){.ch2-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-4px;padding:2px 4px 4px}.ch2-chips::-webkit-scrollbar{display:none}.ch2-chip{flex:none}}
 /* ===== Mr.Sam: Новый год ===== */
 .ny-snow{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none}
 .ny-snow.back{z-index:-1}
@@ -2828,64 +2859,113 @@ const CONFIG = {
   }
 
   /* ---------- chart ---------- */
+  /* ---------- график прогресса v2: плавные линии, зона цели, фокус на разделе ---------- */
+  let chartSec = "all";
+  function smoothPath(P) {
+    // монотонная кубическая кривая (Фрич–Карлсон): без «перелётов» за реальные значения
+    if (P.length < 2) return "";
+    if (P.length === 2) return "M" + P[0].x + "," + P[0].y + "L" + P[1].x + "," + P[1].y;
+    const n = P.length, dx = [], dy = [], m = [], t = [];
+    for (let i = 0; i < n - 1; i++) { dx[i] = Math.max(1e-6, P[i + 1].x - P[i].x); dy[i] = P[i + 1].y - P[i].y; m[i] = dy[i] / dx[i]; }
+    t[0] = m[0]; t[n - 1] = m[n - 2];
+    for (let i = 1; i < n - 1; i++) t[i] = m[i - 1] * m[i] <= 0 ? 0 : (m[i - 1] + m[i]) / 2;
+    for (let i = 0; i < n - 1; i++) {
+      if (m[i] === 0) { t[i] = 0; t[i + 1] = 0; continue; }
+      const a = t[i] / m[i], b = t[i + 1] / m[i], q = a * a + b * b;
+      if (q > 9) { const k = 3 / Math.sqrt(q); t[i] = k * a * m[i]; t[i + 1] = k * b * m[i]; }
+    }
+    let d = "M" + P[0].x.toFixed(1) + "," + P[0].y.toFixed(1);
+    for (let i = 0; i < n - 1; i++) {
+      const h3 = dx[i] / 3;
+      d += "C" + (P[i].x + h3).toFixed(1) + "," + (P[i].y + t[i] * h3).toFixed(1) + " " + (P[i + 1].x - h3).toFixed(1) + "," + (P[i + 1].y - t[i + 1] * h3).toFixed(1) + " " + P[i + 1].x.toFixed(1) + "," + P[i + 1].y.toFixed(1);
+    }
+    return d;
+  }
   function drawChart(box, ex) {
     const d = data(), E = EXAMS[ex], tgt = d.profile.targets[ex];
-    const pts = d.attempts.filter(a => a.exam === ex).map(a => ({ a, t: new Date(a.date).getTime(), y: scoreOf(a), sec: a.section }));
-    if (!pts.length) { box.replaceChildren(h("div", { class: "chart-empty" }, "Пока нет результатов " + E.name + ". Пройди тест, и здесь появится линия прогресса.")); return; }
-    const secsPresent = Object.keys(SECTIONS).filter(k => pts.some(p => p.sec === k));
-    const legend = h("div", { class: "legend", "aria-hidden": "true" });
-    secsPresent.forEach(k => { const sv = s("svg", { viewBox: "0 0 14 14" }); sv.append(marker(SECTIONS[k].shape, 7, 7, 5, SECTIONS[k].hex)); legend.append(h("span", {}, sv, SECTIONS[k].name)); });
-    const tip = h("div", { class: "tip", hidden: true });
-    const W = Math.max(300, box.clientWidth || 640), H = W < 520 ? 240 : 290;
-    const m = { l: 34, r: W < 520 ? 56 : 92, t: 14, b: 30 };
-    // если все попытки укладываются в сутки, ставим точки по порядку, а не по времени
-    const sameDay = Math.max(...pts.map(p => p.t)) - Math.min(...pts.map(p => p.t)) < 864e5;
-    if (sameDay) pts.forEach((p, i) => { p.t = i; });
-    const t0 = Math.min(...pts.map(p => p.t)), t1 = Math.max(...pts.map(p => p.t));
-    const x = t => t1 === t0 ? (m.l + (W - m.r)) / 2 : m.l + (t - t0) / (t1 - t0) * (W - m.l - m.r);
-    const y = v => m.t + (E.max - v) / (E.max - E.min) * (H - m.t - m.b);
-    const svg = s("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img", "aria-label": "График баллов " + E.name + " по разделам. Подробности во вкладке История." });
-    for (let v = E.min; v <= E.max; v++) {
-      svg.append(s("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: "#D6DFD3", "stroke-width": 1 }));
-      svg.append(s("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end", "font-size": 12, "font-weight": 800, fill: "#53665B", "font-family": "Nunito, sans-serif" }, v));
+    const all = d.attempts.filter(a => a.exam === ex).map(a => ({ a, t: new Date(a.date).getTime(), y: scoreOf(a), sec: a.section })).sort((p, q) => p.t - q.t);
+    if (!all.length) { box.replaceChildren(h("div", { class: "chart-empty" }, "Пока нет результатов " + E.name + ". Пройди тест, и здесь появится линия прогресса.")); return; }
+    const secs = Object.keys(SECTIONS).filter(k => all.some(p => p.sec === k));
+    if (chartSec !== "all" && !secs.includes(chartSec)) chartSec = "all";
+    const sameDay = all[all.length - 1].t - all[0].t < 864e5;
+    if (sameDay) all.forEach((p, i) => { p.t = i; });
+
+    // чипы разделов: последний балл и изменение
+    const chips = h("div", { class: "ch2-chips", role: "group", "aria-label": "Раздел на графике" });
+    const chip = (k, label, val, delta, col) => h("button", { type: "button", class: "ch2-chip" + (chartSec === k ? " on" : ""), "aria-pressed": chartSec === k ? "true" : "false", style: col ? "--c:" + col : "", onclick: () => { chartSec = k; drawChart(box, ex); } },
+      col ? h("i", { "aria-hidden": "true" }) : null, h("span", {}, label), val != null ? h("b", {}, fmtScore(ex, val)) : null,
+      delta ? h("small", { class: delta > 0 ? "up" : "down" }, (delta > 0 ? "+" : "") + delta.toFixed(1)) : null);
+    chips.append(chip("all", "Все", null, null, null));
+    secs.forEach(k => { const sp = all.filter(p => p.sec === k), last = sp[sp.length - 1], prev = sp[sp.length - 2]; chips.append(chip(k, SECTIONS[k].name, last.y, prev ? last.y - prev.y : 0, SECTIONS[k].hex)); });
+
+    // масштаб: только нужный диапазон баллов, а не вся шкала
+    const W = Math.max(300, box.clientWidth || 640), small = W < 560, H = small ? 250 : 300;
+    const m = { l: 34, r: small ? 16 : 24, t: 22, b: 34 };
+    const vals = all.map(p => p.y).concat([tgt]);
+    let lo = Math.max(E.min, Math.floor((Math.min(...vals) - 0.5) * 2) / 2), hi = Math.min(E.max, Math.ceil((Math.max(...vals) + 0.5) * 2) / 2);
+    if (hi - lo < 2) { hi = Math.min(E.max, lo + 2); lo = Math.max(E.min, hi - 2); }
+    const t0 = all[0].t, t1 = all[all.length - 1].t;
+    const x = t => t1 === t0 ? (m.l + W - m.r) / 2 : m.l + (t - t0) / (t1 - t0) * (W - m.l - m.r);
+    const y = v => m.t + (hi - v) / (hi - lo) * (H - m.t - m.b);
+    const svg = s("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, class: "ch2", role: "img", "aria-label": "График " + E.name + ": " + secs.map(k => { const sp = all.filter(p => p.sec === k); return SECTIONS[k].name + " " + fmtScore(ex, sp[sp.length - 1].y); }).join(", ") + ". Цель " + fmtScore(ex, tgt) + "." });
+    const defs = s("defs", {});
+    secs.forEach(k => {
+      const g = s("linearGradient", { id: "chg-" + k, x1: 0, y1: 0, x2: 0, y2: 1 });
+      g.append(s("stop", { offset: 0, "stop-color": SECTIONS[k].hex, "stop-opacity": .28 }), s("stop", { offset: 1, "stop-color": SECTIONS[k].hex, "stop-opacity": 0 }));
+      defs.append(g);
+    });
+    svg.append(defs);
+    // зона цели
+    if (tgt <= hi) {
+      svg.append(s("rect", { x: m.l, y: y(hi), width: W - m.l - m.r, height: Math.max(0, y(tgt) - y(hi)), fill: "#D5F36A", opacity: .22, rx: 10 }));
+      svg.append(s("line", { x1: m.l, x2: W - m.r, y1: y(tgt), y2: y(tgt), stroke: "#7FA51C", "stroke-width": 1.6, "stroke-dasharray": "2 5", "stroke-linecap": "round" }));
     }
-    // цель
-    svg.append(s("line", { x1: m.l, x2: W - m.r, y1: y(tgt), y2: y(tgt), stroke: "#17382C", "stroke-width": 1.5, "stroke-dasharray": "5 5" }));
-    svg.append(s("text", { x: m.l + 6, y: y(tgt) - 6, "font-size": 12, "font-weight": 900, fill: "#17382C", "font-family": "Nunito, sans-serif" }, "Цель " + fmtScore(ex, tgt)));
-    // ось X: первая и последняя дата
-    const xl = (t, anchor) => svg.append(s("text", { x: x(t), y: H - 8, "text-anchor": anchor, "font-size": 12, "font-weight": 800, fill: "#53665B", "font-family": "Nunito, sans-serif" }, fmtDate(new Date(t).toISOString())));
-    if (sameDay) svg.append(s("text", { x: (m.l + W - m.r) / 2, y: H - 8, "text-anchor": "middle", "font-size": 12, "font-weight": 800, fill: "#53665B", "font-family": "Nunito, sans-serif" }, fmtDate(pts[0].a.date) + ", по порядку попыток"));
-    else { xl(t0, "start"); xl(t1, "end"); }
-    // линии и маркеры
-    const ends = [];
-    secsPresent.forEach(k => {
-      const sp = pts.filter(p => p.sec === k), col = SECTIONS[k].hex;
-      if (sp.length > 1) svg.append(s("polyline", { points: sp.map(p => x(p.t) + "," + y(p.y)).join(" "), fill: "none", stroke: col, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
-      sp.forEach(p => { p.cx = x(p.t); p.cy = y(p.y); svg.append(marker(SECTIONS[k].shape, p.cx, p.cy, 5, col, true)); });
-      const last = sp[sp.length - 1]; ends.push({ k, y: last.cy, x: last.cx, v: last.y });
+    // сетка по полбалла, подписи на целых
+    for (let v = lo; v <= hi + 1e-9; v += 0.5) {
+      const whole = Math.abs(v - Math.round(v)) < 1e-9;
+      svg.append(s("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: whole ? "#E3E8E0" : "#F0F2EE", "stroke-width": 1 }));
+      if (whole || hi - lo <= 3) svg.append(s("text", { x: m.l - 10, y: y(v) + 4, "text-anchor": "end", class: "ch2-ax" }, fmtScore(ex, v)));
+    }
+    // ось X: до 5 дат
+    if (sameDay) svg.append(s("text", { x: (m.l + W - m.r) / 2, y: H - 8, "text-anchor": "middle", class: "ch2-ax" }, fmtDate(all[0].a.date) + ", по порядку попыток"));
+    else {
+      const n = small ? 3 : 5;
+      for (let i = 0; i < n; i++) { const t = t0 + (t1 - t0) * i / (n - 1); svg.append(s("text", { x: x(t), y: H - 8, "text-anchor": i === 0 ? "start" : i === n - 1 ? "end" : "middle", class: "ch2-ax" }, fmtDate(new Date(t).toISOString()))); }
+    }
+    // линии
+    const series = secs.map(k => { const sp = all.filter(p => p.sec === k); sp.forEach(p => { p.cx = x(p.t); p.cy = y(p.y); }); return { k, sp, col: SECTIONS[k].hex }; });
+    const focus = k => chartSec === "all" || chartSec === k;
+    series.slice().sort((a, b) => (focus(a.k) ? 1 : 0) - (focus(b.k) ? 1 : 0)).forEach(({ k, sp, col }) => {
+      const P = sp.map(p => ({ x: p.cx, y: p.cy })), dPath = smoothPath(P), g = s("g", { class: "ch2-s" + (focus(k) ? "" : " dim") });
+      if (focus(k) && P.length > 1 && (chartSec !== "all" || secs.length === 1)) g.append(s("path", { d: dPath + "L" + P[P.length - 1].x + "," + (H - m.b) + "L" + P[0].x + "," + (H - m.b) + "Z", fill: "url(#chg-" + k + ")" }));
+      if (P.length > 1) g.append(s("path", { d: dPath, fill: "none", stroke: col, "stroke-width": focus(k) ? 3.4 : 2, "stroke-linecap": "round", "stroke-linejoin": "round", class: "ch2-line", pathLength: 1 }));
+      sp.forEach((p, i) => { const last = i === sp.length - 1; if (last && focus(k)) g.append(s("circle", { cx: p.cx, cy: p.cy, r: 11, fill: col, opacity: .18, class: "ch2-pulse" })); g.append(s("circle", { cx: p.cx, cy: p.cy, r: last ? 6 : 4.2, fill: last ? col : "#fff", stroke: col, "stroke-width": last ? 3 : 2.4 })); });
+      svg.append(g);
     });
-    // прямые подписи у последней точки, разведённые по вертикали
-    ends.sort((a, b) => a.y - b.y);
-    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
-    ends.forEach(e => svg.append(s("text", { x: W - m.r + 10, y: e.y + 4, "font-size": 12, "font-weight": 900, fill: "#17382C", "font-family": "Nunito, sans-serif" }, (W < 520 ? SECTIONS[e.k].short : SECTIONS[e.k].name) + " " + fmtScore(ex, e.v))));
-    // hover
-    const cross = s("line", { y1: m.t, y2: H - m.b, stroke: "#53665B", "stroke-width": 1, opacity: 0 });
-    svg.append(cross);
-    const hit = s("rect", { x: m.l - 10, y: 0, width: W - m.l - m.r + 20, height: H, fill: "transparent" });
-    svg.append(hit);
-    const show = p => {
-      cross.setAttribute("x1", p.cx); cross.setAttribute("x2", p.cx); cross.setAttribute("opacity", .5);
-      tip.hidden = false; tip.style.left = Math.min(Math.max(p.cx, 80), W - 80) + "px"; tip.style.top = p.cy + "px";
-      tip.replaceChildren(h("b", {}, SECTIONS[p.sec].name + " " + fmtScore(ex, p.y)), h("br"), fmtDate(p.a.date) + (p.a.teacherScore != null ? ", оценка преподавателя" : p.a.self ? ", самооценка" : ""));
+    // плашка «цель»
+    if (tgt <= hi) { const tw = 70, tx = W - m.r - tw; svg.append(s("rect", { x: tx, y: y(tgt) - 23, width: tw, height: 19, rx: 9.5, fill: "#153E2D" })); svg.append(s("text", { x: tx + tw / 2, y: y(tgt) - 9.5, "text-anchor": "middle", class: "ch2-goal" }, "Цель " + fmtScore(ex, tgt))); }
+
+    // подсказка: значения всех разделов на выбранную дату
+    const tip = h("div", { class: "ch2-tip", hidden: true });
+    const guide = s("line", { y1: m.t, y2: H - m.b, stroke: "#153E2D", "stroke-width": 1, "stroke-dasharray": "3 4", opacity: 0 });
+    const dot = s("g", {}); svg.append(guide, dot);
+    const times = [...new Set(all.map(p => p.t))];
+    const show = t => {
+      const gx = x(t); guide.setAttribute("x1", gx); guide.setAttribute("x2", gx); guide.setAttribute("opacity", .5);
+      dot.replaceChildren();
+      const rows = series.map(({ k, sp, col }) => { const upto = sp.filter(p => p.t <= t), p = upto[upto.length - 1]; if (!p) return null; if (p.t === t) dot.append(s("circle", { cx: p.cx, cy: p.cy, r: 7, fill: "none", stroke: col, "stroke-width": 2.5 })); return h("div", { class: "ch2-row" + (p.t === t ? "" : " old") }, h("i", { style: "background:" + col }), h("span", {}, SECTIONS[k].name), h("b", {}, fmtScore(ex, p.y))); }).filter(Boolean);
+      const at = all.find(p => p.t === t);
+      tip.replaceChildren(h("div", { class: "ch2-date" }, sameDay ? "Попытка " + (t + 1) : fmtDate(at.a.date)), ...rows);
+      tip.hidden = false;
+      const r = box.getBoundingClientRect(), sv = svg.getBoundingClientRect(), px = (sv.left - r.left) + gx * sv.width / W;
+      tip.style.left = Math.min(Math.max(px, 90), r.width - 90) + "px";
     };
-    const hide = () => { tip.hidden = true; cross.setAttribute("opacity", 0); };
-    hit.addEventListener("pointermove", e => {
-      const r = svg.getBoundingClientRect(), sx = (e.clientX - r.left) * W / r.width, sy = (e.clientY - r.top) * H / r.height;
-      let best = null, bd = 1e9; pts.forEach(p => { const dd = Math.hypot(p.cx - sx, (p.cy - sy) * 0.6); if (dd < bd) { bd = dd; best = p; } });
-      bd < 60 ? show(best) : hide();
-    });
-    hit.addEventListener("pointerleave", hide);
-    box.replaceChildren(legend, svg, tip);
+    const hide = () => { tip.hidden = true; guide.setAttribute("opacity", 0); dot.replaceChildren(); };
+    const hit = s("rect", { x: m.l - 12, y: 0, width: W - m.l - m.r + 24, height: H, fill: "transparent" });
+    svg.append(hit);
+    const pick = e => { const r = svg.getBoundingClientRect(), sx = (e.clientX - r.left) * W / r.width; let best = times[0], bd = 1e9; times.forEach(t => { const dd = Math.abs(x(t) - sx); if (dd < bd) { bd = dd; best = t; } }); show(best); };
+    hit.addEventListener("pointermove", pick); hit.addEventListener("pointerdown", pick); hit.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") hide(); });
+    box.replaceChildren(chips, h("div", { class: "ch2-wrap" }, svg, tip));
   }
   function marker(shape, cx, cy, r, col, ring) {
     const common = { fill: col, stroke: ring ? "#FFFFFF" : "none", "stroke-width": ring ? 2 : 0 };

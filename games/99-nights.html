@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>99 ночей: таблица умножения</title>
+<style>
+:root{--ink:#F4F1E6;--lime:#D5F36A;--ember:#FF9A3C;--night:#0B1A2A}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{font:700 16px/1.4 "Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--night);overflow:hidden;user-select:none;-webkit-user-select:none}
+.scene{position:fixed;inset:0;background:radial-gradient(120% 80% at 50% 110%,#2A1A10 0%,#14223A 45%,#060E18 100%);transition:filter .6s}
+.stars{position:absolute;inset:0 0 40% 0}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.8;animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.2}}
+.moon{position:absolute;right:12%;top:9%;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFFBE8,#E9E1C2);box-shadow:0 0 60px 10px rgba(255,248,214,.25)}
+.moon::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.08);left:22px;top:30px;box-shadow:20px -12px 0 -4px rgba(0,0,0,.07)}
+svg.forest{position:absolute;left:0;right:0;bottom:0;width:100%;height:62%}
+.eyes{position:absolute;bottom:30%;display:flex;gap:9px;opacity:0;transition:opacity .8s}
+.eyes i{width:9px;height:6px;border-radius:50%;background:#FFE15A;box-shadow:0 0 10px #FFD23A;animation:blink 4s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.fire{position:absolute;left:50%;bottom:9%;width:160px;height:200px;transform:translateX(-50%) scale(var(--s,1));transform-origin:50% 100%;transition:transform .5s}
+.glow{position:absolute;left:50%;bottom:4%;width:520px;height:300px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,150,60,.42),rgba(255,120,40,.12) 60%,transparent);opacity:var(--g,1);transition:opacity .6s;pointer-events:none}
+.flame{position:absolute;left:50%;bottom:34px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;transform-origin:50% 100%;filter:blur(.5px)}
+.f1{width:90px;height:140px;margin-left:-45px;background:radial-gradient(circle at 50% 75%,#FFE07A,#FF8A2B 55%,#E2451B);animation:fl 1s ease-in-out infinite alternate}
+.f2{width:60px;height:100px;margin-left:-38px;background:radial-gradient(circle at 50% 75%,#FFF2B0,#FFB347 60%,#FF6A1F);animation:fl 1.3s ease-in-out infinite alternate-reverse;opacity:.9}
+.f3{width:44px;height:74px;margin-left:-4px;background:radial-gradient(circle at 50% 75%,#FFFBE0,#FFD36B 70%);animation:fl .8s ease-in-out infinite alternate}
+@keyframes fl{0%{transform:scaleY(1) skewX(-3deg)}100%{transform:scaleY(1.12) skewX(4deg)}}
+.logs{position:absolute;left:50%;bottom:16px;width:150px;height:34px;margin-left:-75px}
+.logs b{position:absolute;bottom:0;width:140px;height:20px;border-radius:10px;background:linear-gradient(#7A4A2A,#4A2A16);left:5px}
+.logs b:nth-child(1){transform:rotate(14deg)}.logs b:nth-child(2){transform:rotate(-14deg)}
+.spark{position:absolute;left:50%;bottom:120px;width:4px;height:4px;border-radius:50%;background:#FFD36B;pointer-events:none;animation:sp 1.2s ease-out forwards}
+@keyframes sp{to{transform:translate(var(--dx),-160px);opacity:0}}
+.hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:14px 16px;gap:10px;z-index:3}
+.chip{padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.chip small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.chip b{font:900 22px/1 system-ui,sans-serif}
+.bar{width:150px;height:10px;border-radius:6px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:var(--w,100%);background:linear-gradient(90deg,#FF6A1F,#FFD36B);transition:width .4s}
+.card{position:fixed;left:50%;top:22%;transform:translateX(-50%);width:min(420px,calc(100vw - 32px));text-align:center;z-index:3;padding:18px;border-radius:26px;background:rgba(10,20,32,.55);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.q{font:900 clamp(40px,11vw,64px)/1 system-ui,sans-serif;letter-spacing:-.02em}
+.timer{height:6px;border-radius:4px;background:rgba(255,255,255,.15);margin:14px 0 12px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--lime);transform-origin:left;width:100%}
+.ans{font:900 34px/1 system-ui,sans-serif;min-height:52px;padding:8px;border-radius:14px;background:rgba(255,255,255,.1);letter-spacing:.04em}
+.ans.ok{background:rgba(213,243,106,.35)}.ans.bad{background:rgba(255,90,90,.35);animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pad{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(340px,calc(100vw - 32px));z-index:3}
+.pad button{min-height:52px;border-radius:16px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.12);color:var(--ink);font:900 22px/1 system-ui,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.pad button:active{transform:scale(.96)}
+.pad .go{background:var(--lime);color:#153E2D}
+.screen{position:fixed;inset:0;z-index:5;display:grid;place-items:center;padding:20px;background:rgba(5,12,20,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.screen>div{width:min(440px,100%);text-align:center;padding:26px;border-radius:28px;background:rgba(12,24,38,.85);border:1px solid rgba(255,255,255,.15)}
+h1{margin:0 0 8px;font:900 clamp(30px,8vw,44px)/1 system-ui,sans-serif;text-transform:uppercase;letter-spacing:-.02em}
+h1 span{color:var(--ember)}
+p{margin:0 0 14px;opacity:.85}
+.big{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 26px;border-radius:999px;border:0;background:var(--lime);color:#153E2D;font:900 16px/1 system-ui,sans-serif;text-transform:uppercase;cursor:pointer;box-shadow:0 5px 0 #9CC23A}
+.lv{display:flex;gap:8px;justify-content:center;margin:0 0 16px;flex-wrap:wrap}
+.lv button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:none;color:var(--ink);font-weight:900;cursor:pointer}
+.lv button[aria-pressed="true"]{background:var(--ink);color:#0B1A2A}
+.combo{position:fixed;left:50%;top:15%;transform:translateX(-50%);z-index:4;font:900 18px/1 system-ui,sans-serif;color:var(--lime);opacity:0;transition:opacity .3s}
+@media (max-width:759px){.card{top:11%}.fire{bottom:250px;width:120px;height:150px}.glow{bottom:200px;width:380px;height:240px}.eyes{bottom:52%}}
+@media (min-width:760px){.pad{left:auto;right:28px;bottom:50%;transform:translateY(50%);width:250px}.card{top:18%}}
+@media (max-height:600px) and (max-width:759px){.card{top:8%;padding:12px}.q{font-size:36px}.fire{bottom:240px;width:90px;height:120px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="scene" id="scene">
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+  <svg class="forest" viewBox="0 0 400 250" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <path d="M0 250 L0 120 L20 60 L40 120 L55 80 L75 130 L95 50 L118 130 L135 90 L150 140 L0 140Z" fill="#0A1622"/>
+    <path d="M250 140 L265 90 L282 130 L305 45 L328 130 L345 85 L362 125 L380 60 L400 120 L400 250 L250 250Z" fill="#0A1622"/>
+    <path d="M0 250 L0 160 L30 95 L58 165 L80 120 L104 175 L0 180Z M300 180 L322 118 L344 172 L370 100 L400 165 L400 250Z" fill="#071019"/>
+    <rect x="0" y="200" width="400" height="50" fill="#0D1810"/>
+  </svg>
+  <div class="eyes" id="e1" style="left:12%"><i></i><i></i></div>
+  <div class="eyes" id="e2" style="right:14%;bottom:36%"><i></i><i></i></div>
+  <div class="glow" id="glow"></div>
+  <div class="fire" id="fire"><div class="logs"><b></b><b></b></div><div class="flame f1"></div><div class="flame f2"></div><div class="flame f3"></div></div>
+</div>
+
+<div class="hud">
+  <div class="chip"><small>Ночь</small><b id="night">1</b><small style="display:inline;margin-left:4px">из 99</small></div>
+  <div class="chip"><small>Костёр</small><div class="bar"><i id="fuel"></i></div></div>
+</div>
+<div class="combo" id="combo"></div>
+
+<div class="card" id="card" hidden>
+  <div class="q" id="q">7 × 8</div>
+  <div class="timer"><i id="tm"></i></div>
+  <div class="ans" id="ans" aria-live="polite">&nbsp;</div>
+</div>
+<div class="pad" id="pad" hidden></div>
+
+<div class="screen" id="start">
+  <div>
+    <h1>99 <span>ночей</span></h1>
+    <p>Ты в лесу, и единственное спасение это костёр. Каждый верный ответ подкидывает дров. Ошибка или долгий ответ, и огонь слабеет. Продержись 99 ночей.</p>
+    <div class="lv" role="group" aria-label="Уровень">
+      <button type="button" data-l="1" aria-pressed="true">Таблица до 5</button>
+      <button type="button" data-l="2" aria-pressed="false">До 10</button>
+      <button type="button" data-l="3" aria-pressed="false">До 12 и деление</button>
+    </div>
+    <button class="big" id="go" type="button">Разжечь костёр</button>
+    <p id="best" style="margin:14px 0 0;font-size:14px"></p>
+  </div>
+</div>
+<div class="screen" id="end" hidden>
+  <div>
+    <h1 id="endT">Костёр погас</h1>
+    <p id="endP"></p>
+    <button class="big" id="again" type="button">Ещё раз</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var st = $("stars");
+  for (var i = 0; i < 70; i++) { var s = document.createElement("i"); s.style.left = Math.random() * 100 + "%"; s.style.top = Math.random() * 100 + "%"; s.style.animationDelay = (Math.random() * 3) + "s"; st.appendChild(s); }
+  var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  var busy = false, level = 1, night = 1, fuel = 70, cur = null, typed = "", t0 = 0, limit = 9000, raf = 0, combo = 0, wrong = 0, running = false;
+  var pad = $("pad");
+  ["1","2","3","4","5","6","7","8","9","⌫","0","OK"].forEach(function (k) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = k; if (k === "OK") b.className = "go";
+    b.addEventListener("click", function () { key(k === "⌫" ? "Backspace" : k === "OK" ? "Enter" : k); });
+    pad.appendChild(b);
+  });
+  document.querySelectorAll(".lv button").forEach(function (b) { b.addEventListener("click", function () { level = +b.dataset.l; document.querySelectorAll(".lv button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); showBest(); }); });
+  function showBest() { var b = store.get("n99.best." + level); $("best").textContent = b ? "Твой рекорд на этом уровне: " + b + " " + nights(+b) : ""; }
+  function nights(n) { var a = n % 10, b = n % 100; return a === 1 && b !== 11 ? "ночь" : a >= 2 && a <= 4 && (b < 10 || b >= 20) ? "ночи" : "ночей"; }
+  showBest();
+  function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function question() {
+    var max = level === 1 ? 5 : level === 2 ? 10 : 12, lo = night > 30 ? 3 : 2;
+    var a = rnd(lo, max), b = rnd(lo, max);
+    if (level === 3 && Math.random() < .35) return { t: (a * b) + " : " + a, r: b };
+    return { t: a + " × " + b, r: a * b };
+  }
+  function paint() {
+    $("night").textContent = night; $("fuel").style.setProperty("--w", fuel + "%");
+    var s = .45 + fuel / 100 * .75; $("fire").style.setProperty("--s", s.toFixed(2)); $("glow").style.setProperty("--g", (.25 + fuel / 100 * .9).toFixed(2));
+    $("scene").style.filter = "brightness(" + (.55 + fuel / 100 * .55).toFixed(2) + ")";
+    $("e1").style.opacity = fuel < 45 ? 1 : 0; $("e2").style.opacity = fuel < 25 ? 1 : 0;
+  }
+  function next() {
+    busy = false; cur = question(); typed = ""; $("q").textContent = cur.t; $("ans").textContent = " "; $("ans").className = "ans";
+    limit = Math.max(3500, 9000 - night * 55 - (level - 1) * 800); t0 = performance.now();
+  }
+  function tick(t) {
+    if (!running) return;
+    var k = Math.min(1, Math.max(0, 1 - (t - t0) / limit)); $("tm").style.transform = "scaleX(" + k + ")";
+    if (k <= 0 && !busy) { miss(); }
+    raf = requestAnimationFrame(tick);
+  }
+  function spark() { for (var i = 0; i < 6; i++) { var s = document.createElement("span"); s.className = "spark"; s.style.setProperty("--dx", (Math.random() * 120 - 60) + "px"); $("fire").appendChild(s); setTimeout(function (x) { return function () { x.remove(); }; }(s), 1200); } }
+  function hit() {
+    busy = true; combo++; var bonus = combo >= 5 ? 4 : 0; fuel = Math.min(100, fuel + 9 + bonus); night++; spark();
+    $("ans").className = "ans ok";
+    if (combo >= 3) { $("combo").textContent = "Серия " + combo + "! Огонь сильнее"; $("combo").style.opacity = 1; setTimeout(function () { $("combo").style.opacity = 0; }, 900); }
+    paint(); if (night > 99) return finish(true); setTimeout(next, 260);
+  }
+  function miss() {
+    busy = true; combo = 0; wrong++; fuel = Math.max(0, fuel - 18); $("ans").className = "ans bad"; $("ans").textContent = cur.t + " = " + cur.r;
+    paint(); if (fuel <= 0) return finish(false); t0 = performance.now() + 900; setTimeout(next, 900);
+  }
+  function key(k) {
+    if (!running || busy) return;
+    if (/^[0-9]$/.test(k)) { if (typed.length < 4) typed += k; }
+    else if (k === "Backspace") typed = typed.slice(0, -1);
+    else if (k === "Enter") { if (!typed) return; if (+typed === cur.r) hit(); else miss(); return; }
+    $("ans").textContent = typed || " ";
+    if (typed && +typed === cur.r) hit();
+  }
+  document.addEventListener("keydown", function (e) { if (/^[0-9]$/.test(e.key) || e.key === "Backspace" || e.key === "Enter") { e.preventDefault(); key(e.key); } });
+  function start() {
+    night = 1; fuel = 70; combo = 0; wrong = 0; running = true;
+    $("start").hidden = true; $("end").hidden = true; $("card").hidden = false; pad.hidden = false;
+    paint(); next(); cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
+  }
+  function finish(win) {
+    running = false; cancelAnimationFrame(raf);
+    var got = Math.min(99, night - (win ? 1 : 0)), best = +(store.get("n99.best." + level) || 0);
+    if (got > best) store.set("n99.best." + level, got);
+    $("card").hidden = true; pad.hidden = true; $("end").hidden = false;
+    $("endT").textContent = win ? "Ты выжил 99 ночей!" : "Костёр погас";
+    $("endP").textContent = (win ? "Рассвет! " : "Ты продержался " + got + " " + nights(got) + ". ") + (got > best ? "Это новый рекорд." : "Рекорд: " + Math.max(best, got) + " " + nights(Math.max(best, got)) + ".") + (wrong ? " Ошибок: " + wrong + "." : "");
+    paint();
+  }
+  $("go").addEventListener("click", start); $("again").addEventListener("click", start);
+  paint();
+})();
+</script>
+</body>
+</html>

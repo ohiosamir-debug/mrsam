@@ -482,6 +482,34 @@ body{background:var(--bg)}
 
 .ny-cap::before{border-top-left-radius:inherit;border-top-right-radius:inherit}
 @media (max-width:700px){.ny .ny-toggle{bottom:16px}}
+/* ===== раздел «Игры» ===== */
+.gm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.gm-card{display:flex;flex-direction:column;gap:12px;padding:10px 10px 14px;border-radius:26px;background:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 0 #fff,0 22px 46px -32px rgba(21,62,45,.45);transition:transform .2s cubic-bezier(.2,.7,.2,1)}
+.gm-card:hover{transform:translateY(-4px)}
+.gm-cover{height:140px;border-radius:20px;display:grid;place-items:center;color:#fff;position:relative;overflow:hidden}
+.gm-cover::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 10%,rgba(255,255,255,.4),transparent 50%)}
+.gm-cover svg{width:52px;height:52px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+.gm-body{display:flex;flex-direction:column;gap:6px;padding:0 6px}
+.gm-body h3{margin:0;font:900 17px/1.15 "Unbounded",system-ui,sans-serif;text-transform:uppercase;letter-spacing:-.01em}
+.gm-body p{margin:0;font-size:14.5px;line-height:1.45;color:#5B6B62;font-weight:700}
+.gm-tag{align-self:flex-start;padding:4px 10px;border-radius:999px;background:#ECE8FF;font:900 11px/1.2 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:#4B3BC0}
+.gm-play{margin:auto 6px 0;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border-radius:999px;border:0;background:#D5F36A;color:#153E2D;font:900 14px/1 "Unbounded",system-ui,sans-serif;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 0 #A9CC33}
+.gm-play:active{transform:translateY(2px);box-shadow:0 2px 0 #A9CC33}
+.gm-play:disabled{opacity:.6}
+.gm-empty,.gm-load{grid-column:1/-1;padding:30px;text-align:center;font-weight:800;color:#5B6B62;border:2px dashed rgba(21,62,45,.15);border-radius:22px}
+.gm-load{display:flex;align-items:center;justify-content:center;gap:10px;border:0}
+.gm-spin{width:18px;height:18px;border-radius:50%;border:3px solid rgba(21,62,45,.15);border-top-color:#153E2D;animation:gmsp .8s linear infinite}
+@keyframes gmsp{to{transform:rotate(360deg)}}
+.gm-lock,.gm-lock body{overflow:hidden}
+.gm-ov{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;background:#0B1A2A}
+.gm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 8px 16px;padding-top:max(8px,env(safe-area-inset-top));background:#0F2A1F;color:#F2F7EF}
+.gm-bar b{font:900 14px/1.2 "Unbounded",system-ui,sans-serif;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gm-x{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.gm-x:focus-visible{outline:3px solid #D5F36A;outline-offset:2px}
+.gm-frame{flex:1;width:100%;border:0;background:#0B1A2A}
+
+.hw-cm{margin:0;padding:10px 14px;border-radius:14px;background:var(--violet-soft,#ECE8FF);font-weight:800}
+.st-redo{background:#FFE6D3}
 </style>
 </head>
 <body>
@@ -501,6 +529,49 @@ body{background:var(--bg)}
 </div>
 <main class="wrap" id="app" tabindex="-1"></main>
 
+<script>/* Mr.Sam: раздел «Игры» в кабинетах учеников. HTML-игры от Самира запускаются в изолированном окне.
+   MrSamGames.view({ load: () => Promise<{ok, games}>, get: id => Promise<{ok, html}>, toast, empty }) → элемент */
+(function () {
+  "use strict";
+  const h = (tag, attrs, ...kids) => { const n = document.createElement(tag); for (const k in attrs || {}) { const v = attrs[k]; if (v == null || v === false) continue; if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else if (k === "html") n.innerHTML = v; else n.setAttribute(k, v === true ? "" : v); } kids.flat(9).forEach(c => c != null && c !== false && n.append(c)); return n; };
+  const PAD = '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r="1"/><circle cx="18" cy="13.5" r="1"/></svg>';
+  const PLAY = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+  const COVERS = ["linear-gradient(140deg,#153E2D,#3B7A55)", "linear-gradient(140deg,#6E5BF0,#C7A6FF)", "linear-gradient(140deg,#E2408F,#FFB0A8)", "linear-gradient(140deg,#F2A93B,#FFE27A)"];
+  // в изолированном окне нет доступа к хранилищу браузера: подставляем память, чтобы игры от ГПТ не падали
+  const SHIM = '<script>(function(){function M(){var d={};return{getItem:function(k){return k in d?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}["localStorage","sessionStorage"].forEach(function(n){try{window[n].getItem("x")}catch(e){try{Object.defineProperty(window,n,{value:M(),configurable:true})}catch(_){}}})})();<\/script>';
+  function play(title, html) {
+    const prev = document.activeElement;
+    const fr = h("iframe", { class: "gm-frame", title, sandbox: "allow-scripts allow-pointer-lock", allow: "fullscreen; autoplay" });
+    const x = h("button", { type: "button", class: "gm-x", "aria-label": "Закрыть игру", html: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' });
+    const ov = h("div", { class: "gm-ov", role: "dialog", "aria-modal": "true", "aria-label": title }, h("div", { class: "gm-bar" }, h("b", {}, title), x), fr);
+    const close = () => { ov.remove(); document.documentElement.classList.remove("gm-lock"); document.removeEventListener("keydown", onKey); if (prev && prev.focus) prev.focus(); };
+    const onKey = e => { if (e.key === "Escape") close(); };
+    x.addEventListener("click", close); document.addEventListener("keydown", onKey);
+    document.body.append(ov); document.documentElement.classList.add("gm-lock");
+    fr.srcdoc = SHIM + html; x.focus(); setTimeout(() => { try { fr.focus(); } catch (e) {} }, 300);
+  }
+  function view(o) {
+    const grid = h("div", { class: "gm-grid", "aria-live": "polite" }, h("div", { class: "gm-load" }, h("span", { class: "gm-spin" }), "Загружаю игры…"));
+    o.load().then(j => {
+      if (!j || !j.ok) { grid.replaceChildren(h("div", { class: "gm-empty" }, "Не получилось загрузить игры. Проверь интернет и открой раздел ещё раз.")); return; }
+      if (!j.games.length) { grid.replaceChildren(h("div", { class: "gm-empty" }, o.empty || "Самир ещё не добавил игры. Скоро здесь появятся тренажёры в формате игр.")); return; }
+      grid.replaceChildren(...j.games.map((g, i) => {
+        const b = h("button", { type: "button", class: "gm-play" }, h("span", { html: PLAY, style: "display:contents" }), "Играть");
+        b.addEventListener("click", async () => {
+          b.disabled = true; b.lastChild.textContent = "Загружаю…";
+          const r = await o.get(g.id);
+          b.disabled = false; b.lastChild.textContent = "Играть";
+          if (r && r.ok) play(g.title, r.html); else if (o.toast) o.toast("Игра не загрузилась, попробуй ещё раз");
+        });
+        return h("article", { class: "gm-card" }, h("div", { class: "gm-cover", style: "background:" + COVERS[i % COVERS.length], html: PAD }),
+          h("div", { class: "gm-body" }, g.subject ? h("span", { class: "gm-tag" }, g.subject) : null, h("h3", {}, g.title), g.desc ? h("p", {}, g.desc) : null), b);
+      }));
+    });
+    return grid;
+  }
+  window.MrSamGames = { view, play };
+})();
+</script>
 <script>/* Mr.Sam: новогодний режим. Снег (дальний и ближний слой), гирлянда, шапка Деда Мороза на маскоте, счётчик до Нового года.
    Подключение: MrSamNY.init({ garland: ".nav-bar", caps: ".hero", hats: true, toggleBottom: 16 }) */
 (function () {
@@ -1291,7 +1362,7 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
 
   /* ---------- shell ---------- */
   let view = "overview", run = null, picked = { topic: "arith", level: "base" };
-  const VIEWS = [["overview", "Обзор"], ["trainer", "Тренажёр"], ["history", "История"], ["hw", "Домашка"], ["book", "Запись"], ["pay", "Оплата"]];
+  const VIEWS = [["overview", "Обзор"], ["trainer", "Тренажёр"], ["games", "Игры"], ["history", "История"], ["hw", "Домашка"], ["book", "Запись"], ["pay", "Оплата"]];
   function go(v) { view = v; render(); window.scrollTo(0, 0); }
   function render() {
     const tl = $(".top-links"); let lo = $("#logout");
@@ -1299,18 +1370,18 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
     else if ((!S || demo) && lo) lo.remove();
     if (!D()) { tabs.hidden = true; return renderLogin(); }
     tabs.hidden = false;
-    const TAB_IC = { overview: "home", trainer: "brain", history: "chart", hw: "notebook", book: "calendar", pay: "card" };
+    const TAB_IC = { overview: "home", trainer: "brain", games: "dice", history: "chart", hw: "notebook", book: "calendar", pay: "card" };
     tabs.replaceChildren(...VIEWS.map(([k, label]) => h("button", { type: "button", "aria-current": view === k ? "page" : null, onclick: () => go(k) }, ci(TAB_IC[k], "xs"), label)));
     app.replaceChildren();
     if (demo) app.append(h("div", { class: "banner" }, h("span", {}, "Демо-режим: данные не сохраняются"), h("button", { type: "button", onclick: () => { demo = null; view = "overview"; render(); } }, "Выйти из демо")));
-    ({ overview: renderOverview, trainer: renderTrainer, history: renderHistory, hw: renderHW, book: renderBook, pay: renderPay, run: renderRun, result: renderResult })[view]();
+    ({ overview: renderOverview, games: renderGames, trainer: renderTrainer, history: renderHistory, hw: renderHW, book: renderBook, pay: renderPay, run: renderRun, result: renderResult })[view]();
   }
 
   /* ---------- login ---------- */
   let mUnlock = null, mStep = null, mNote = "";
   const AU = MrSamAuth;
   function sessionExpired() { if (!S) return; delete S.token; store.save(S); store.clear(); mUnlock = S; S = null; mNote = "Сессия закончилась, введи пароль ещё раз."; view = "overview"; render(); }
-  function enter(acc) { S = acc; store.save(S); mUnlock = null; mStep = null; mNote = ""; view = "overview"; render(); pullState(); }
+  function enter(acc) { S = acc; store.save(S); mUnlock = null; mStep = null; mNote = ""; view = "overview"; render(); pullState(); pullHw(); }
   function renderLogin() {
     const formulas = h("div", { class: "formulas", "aria-hidden": "true" }, ...[["x²", "8%", "12%"], ["√49", "22%", "70%"], ["π", "60%", "8%"], ["a²+b²", "70%", "40%"], ["∑", "12%", "48%"], ["½", "44%", "26%"]].map(([t, x, y]) => h("span", { style: `left:${x};top:${y}` }, t)));
     const hero = h("div", { class: "login-hero" }, formulas, h("span", { class: "login-m3d", role: "img", "aria-label": "Маскот Mr.Sam" }), h("h1", { class: "h" }, "Кабинет по математике"), h("p", {}, "Тренажёр по темам, прогресс, домашка и оплата занятий. Для учеников Mr.Sam, которые готовятся по математике."), h("div", { class: "cab-links" }, h("a", { href: "ielts.html" }, ci("cap", "xs"), "Кабинет IELTS"), h("a", { href: "toefl.html" }, ci("globe", "xs"), "Кабинет TOEFL")));
@@ -1519,19 +1590,46 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
     app.append(h("div", { class: "list" }, a.map(x => { const t = T(x.topic), p = x.correct * 10; return h("div", { class: "li" }, h("span", { class: "e", "aria-hidden": "true" }, ci(x.mix ? "dice" : t.e)), h("div", {}, h("b", {}, x.mix ? "Микс тем" : t.name), h("small", {}, new Date(x.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) + " · " + ({ base: "база", exam: "экзамен", en: "на английском" })[x.level] + " · " + Math.round(x.secs / 60) + " мин")), h("span", { class: "pill " + (p >= 80 ? "p-good" : p >= 50 ? "p-mid" : "p-bad") }, x.correct + "/10")); })));
   }
 
+  /* ---------- игры ---------- */
+  const DEMO_GAMES = [{ id: "demo-99", title: "99 ночей: таблица умножения", subject: "Математика", desc: "Продержись 99 ночей у костра: каждый верный ответ подкидывает дров", html: "<!doctype html>\n<html lang=\"ru\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>99 ночей: таблица умножения<\/title>\n<style>\n:root{--ink:#F4F1E6;--lime:#D5F36A;--ember:#FF9A3C;--night:#0B1A2A}\n*{box-sizing:border-box}\n[hidden]{display:none!important}\nhtml,body{margin:0;height:100%}\nbody{font:700 16px/1.4 \"Nunito\",system-ui,-apple-system,\"Segoe UI\",sans-serif;color:var(--ink);background:var(--night);overflow:hidden;user-select:none;-webkit-user-select:none}\n.scene{position:fixed;inset:0;background:radial-gradient(120% 80% at 50% 110%,#2A1A10 0%,#14223A 45%,#060E18 100%);transition:filter .6s}\n.stars{position:absolute;inset:0 0 40% 0}\n.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.8;animation:tw 3s ease-in-out infinite}\n@keyframes tw{50%{opacity:.2}}\n.moon{position:absolute;right:12%;top:9%;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFFBE8,#E9E1C2);box-shadow:0 0 60px 10px rgba(255,248,214,.25)}\n.moon::after{content:\"\";position:absolute;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.08);left:22px;top:30px;box-shadow:20px -12px 0 -4px rgba(0,0,0,.07)}\nsvg.forest{position:absolute;left:0;right:0;bottom:0;width:100%;height:62%}\n.eyes{position:absolute;bottom:30%;display:flex;gap:9px;opacity:0;transition:opacity .8s}\n.eyes i{width:9px;height:6px;border-radius:50%;background:#FFE15A;box-shadow:0 0 10px #FFD23A;animation:blink 4s infinite}\n@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}\n.fire{position:absolute;left:50%;bottom:9%;width:160px;height:200px;transform:translateX(-50%) scale(var(--s,1));transform-origin:50% 100%;transition:transform .5s}\n.glow{position:absolute;left:50%;bottom:4%;width:520px;height:300px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,150,60,.42),rgba(255,120,40,.12) 60%,transparent);opacity:var(--g,1);transition:opacity .6s;pointer-events:none}\n.flame{position:absolute;left:50%;bottom:34px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;transform-origin:50% 100%;filter:blur(.5px)}\n.f1{width:90px;height:140px;margin-left:-45px;background:radial-gradient(circle at 50% 75%,#FFE07A,#FF8A2B 55%,#E2451B);animation:fl 1s ease-in-out infinite alternate}\n.f2{width:60px;height:100px;margin-left:-38px;background:radial-gradient(circle at 50% 75%,#FFF2B0,#FFB347 60%,#FF6A1F);animation:fl 1.3s ease-in-out infinite alternate-reverse;opacity:.9}\n.f3{width:44px;height:74px;margin-left:-4px;background:radial-gradient(circle at 50% 75%,#FFFBE0,#FFD36B 70%);animation:fl .8s ease-in-out infinite alternate}\n@keyframes fl{0%{transform:scaleY(1) skewX(-3deg)}100%{transform:scaleY(1.12) skewX(4deg)}}\n.logs{position:absolute;left:50%;bottom:16px;width:150px;height:34px;margin-left:-75px}\n.logs b{position:absolute;bottom:0;width:140px;height:20px;border-radius:10px;background:linear-gradient(#7A4A2A,#4A2A16);left:5px}\n.logs b:nth-child(1){transform:rotate(14deg)}.logs b:nth-child(2){transform:rotate(-14deg)}\n.spark{position:absolute;left:50%;bottom:120px;width:4px;height:4px;border-radius:50%;background:#FFD36B;pointer-events:none;animation:sp 1.2s ease-out forwards}\n@keyframes sp{to{transform:translate(var(--dx),-160px);opacity:0}}\n.hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:14px 16px;gap:10px;z-index:3}\n.chip{padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}\n.chip small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.7}\n.chip b{font:900 22px/1 system-ui,sans-serif}\n.bar{width:150px;height:10px;border-radius:6px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:6px}\n.bar i{display:block;height:100%;width:var(--w,100%);background:linear-gradient(90deg,#FF6A1F,#FFD36B);transition:width .4s}\n.card{position:fixed;left:50%;top:22%;transform:translateX(-50%);width:min(420px,calc(100vw - 32px));text-align:center;z-index:3;padding:18px;border-radius:26px;background:rgba(10,20,32,.55);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}\n.q{font:900 clamp(40px,11vw,64px)/1 system-ui,sans-serif;letter-spacing:-.02em}\n.timer{height:6px;border-radius:4px;background:rgba(255,255,255,.15);margin:14px 0 12px;overflow:hidden}\n.timer i{display:block;height:100%;background:var(--lime);transform-origin:left;width:100%}\n.ans{font:900 34px/1 system-ui,sans-serif;min-height:52px;padding:8px;border-radius:14px;background:rgba(255,255,255,.1);letter-spacing:.04em}\n.ans.ok{background:rgba(213,243,106,.35)}.ans.bad{background:rgba(255,90,90,.35);animation:sh .3s}\n@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}\n.pad{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(340px,calc(100vw - 32px));z-index:3}\n.pad button{min-height:52px;border-radius:16px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.12);color:var(--ink);font:900 22px/1 system-ui,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}\n.pad button:active{transform:scale(.96)}\n.pad .go{background:var(--lime);color:#153E2D}\n.screen{position:fixed;inset:0;z-index:5;display:grid;place-items:center;padding:20px;background:rgba(5,12,20,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}\n.screen>div{width:min(440px,100%);text-align:center;padding:26px;border-radius:28px;background:rgba(12,24,38,.85);border:1px solid rgba(255,255,255,.15)}\nh1{margin:0 0 8px;font:900 clamp(30px,8vw,44px)/1 system-ui,sans-serif;text-transform:uppercase;letter-spacing:-.02em}\nh1 span{color:var(--ember)}\np{margin:0 0 14px;opacity:.85}\n.big{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 26px;border-radius:999px;border:0;background:var(--lime);color:#153E2D;font:900 16px/1 system-ui,sans-serif;text-transform:uppercase;cursor:pointer;box-shadow:0 5px 0 #9CC23A}\n.lv{display:flex;gap:8px;justify-content:center;margin:0 0 16px;flex-wrap:wrap}\n.lv button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:none;color:var(--ink);font-weight:900;cursor:pointer}\n.lv button[aria-pressed=\"true\"]{background:var(--ink);color:#0B1A2A}\n.combo{position:fixed;left:50%;top:15%;transform:translateX(-50%);z-index:4;font:900 18px/1 system-ui,sans-serif;color:var(--lime);opacity:0;transition:opacity .3s}\n@media (max-width:759px){.card{top:11%}.fire{bottom:250px;width:120px;height:150px}.glow{bottom:200px;width:380px;height:240px}.eyes{bottom:52%}}\n@media (min-width:760px){.pad{left:auto;right:28px;bottom:50%;transform:translateY(50%);width:250px}.card{top:18%}}\n@media (max-height:600px) and (max-width:759px){.card{top:8%;padding:12px}.q{font-size:36px}.fire{bottom:240px;width:90px;height:120px}}\n@media (prefers-reduced-motion:reduce){*{animation:none!important}}\n<\/style>\n<\/head>\n<body>\n<div class=\"scene\" id=\"scene\">\n  <div class=\"stars\" id=\"stars\"><\/div>\n  <div class=\"moon\"><\/div>\n  <svg class=\"forest\" viewBox=\"0 0 400 250\" preserveAspectRatio=\"xMidYMax slice\" aria-hidden=\"true\">\n    <path d=\"M0 250 L0 120 L20 60 L40 120 L55 80 L75 130 L95 50 L118 130 L135 90 L150 140 L0 140Z\" fill=\"#0A1622\"/>\n    <path d=\"M250 140 L265 90 L282 130 L305 45 L328 130 L345 85 L362 125 L380 60 L400 120 L400 250 L250 250Z\" fill=\"#0A1622\"/>\n    <path d=\"M0 250 L0 160 L30 95 L58 165 L80 120 L104 175 L0 180Z M300 180 L322 118 L344 172 L370 100 L400 165 L400 250Z\" fill=\"#071019\"/>\n    <rect x=\"0\" y=\"200\" width=\"400\" height=\"50\" fill=\"#0D1810\"/>\n  <\/svg>\n  <div class=\"eyes\" id=\"e1\" style=\"left:12%\"><i><\/i><i><\/i><\/div>\n  <div class=\"eyes\" id=\"e2\" style=\"right:14%;bottom:36%\"><i><\/i><i><\/i><\/div>\n  <div class=\"glow\" id=\"glow\"><\/div>\n  <div class=\"fire\" id=\"fire\"><div class=\"logs\"><b><\/b><b><\/b><\/div><div class=\"flame f1\"><\/div><div class=\"flame f2\"><\/div><div class=\"flame f3\"><\/div><\/div>\n<\/div>\n\n<div class=\"hud\">\n  <div class=\"chip\"><small>Ночь<\/small><b id=\"night\">1<\/b><small style=\"display:inline;margin-left:4px\">из 99<\/small><\/div>\n  <div class=\"chip\"><small>Костёр<\/small><div class=\"bar\"><i id=\"fuel\"><\/i><\/div><\/div>\n<\/div>\n<div class=\"combo\" id=\"combo\"><\/div>\n\n<div class=\"card\" id=\"card\" hidden>\n  <div class=\"q\" id=\"q\">7 × 8<\/div>\n  <div class=\"timer\"><i id=\"tm\"><\/i><\/div>\n  <div class=\"ans\" id=\"ans\" aria-live=\"polite\">&nbsp;<\/div>\n<\/div>\n<div class=\"pad\" id=\"pad\" hidden><\/div>\n\n<div class=\"screen\" id=\"start\">\n  <div>\n    <h1>99 <span>ночей<\/span><\/h1>\n    <p>Ты в лесу, и единственное спасение это костёр. Каждый верный ответ подкидывает дров. Ошибка или долгий ответ, и огонь слабеет. Продержись 99 ночей.<\/p>\n    <div class=\"lv\" role=\"group\" aria-label=\"Уровень\">\n      <button type=\"button\" data-l=\"1\" aria-pressed=\"true\">Таблица до 5<\/button>\n      <button type=\"button\" data-l=\"2\" aria-pressed=\"false\">До 10<\/button>\n      <button type=\"button\" data-l=\"3\" aria-pressed=\"false\">До 12 и деление<\/button>\n    <\/div>\n    <button class=\"big\" id=\"go\" type=\"button\">Разжечь костёр<\/button>\n    <p id=\"best\" style=\"margin:14px 0 0;font-size:14px\"><\/p>\n  <\/div>\n<\/div>\n<div class=\"screen\" id=\"end\" hidden>\n  <div>\n    <h1 id=\"endT\">Костёр погас<\/h1>\n    <p id=\"endP\"><\/p>\n    <button class=\"big\" id=\"again\" type=\"button\">Ещё раз<\/button>\n  <\/div>\n<\/div>\n\n<script>\n(function () {\n  var $ = function (id) { return document.getElementById(id); };\n  var st = $(\"stars\");\n  for (var i = 0; i < 70; i++) { var s = document.createElement(\"i\"); s.style.left = Math.random() * 100 + \"%\"; s.style.top = Math.random() * 100 + \"%\"; s.style.animationDelay = (Math.random() * 3) + \"s\"; st.appendChild(s); }\n  var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };\n  var busy = false, level = 1, night = 1, fuel = 70, cur = null, typed = \"\", t0 = 0, limit = 9000, raf = 0, combo = 0, wrong = 0, running = false;\n  var pad = $(\"pad\");\n  [\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"⌫\",\"0\",\"OK\"].forEach(function (k) {\n    var b = document.createElement(\"button\"); b.type = \"button\"; b.textContent = k; if (k === \"OK\") b.className = \"go\";\n    b.addEventListener(\"click\", function () { key(k === \"⌫\" ? \"Backspace\" : k === \"OK\" ? \"Enter\" : k); });\n    pad.appendChild(b);\n  });\n  document.querySelectorAll(\".lv button\").forEach(function (b) { b.addEventListener(\"click\", function () { level = +b.dataset.l; document.querySelectorAll(\".lv button\").forEach(function (x) { x.setAttribute(\"aria-pressed\", x === b ? \"true\" : \"false\"); }); showBest(); }); });\n  function showBest() { var b = store.get(\"n99.best.\" + level); $(\"best\").textContent = b ? \"Твой рекорд на этом уровне: \" + b + \" \" + nights(+b) : \"\"; }\n  function nights(n) { var a = n % 10, b = n % 100; return a === 1 && b !== 11 ? \"ночь\" : a >= 2 && a <= 4 && (b < 10 || b >= 20) ? \"ночи\" : \"ночей\"; }\n  showBest();\n  function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }\n  function question() {\n    var max = level === 1 ? 5 : level === 2 ? 10 : 12, lo = night > 30 ? 3 : 2;\n    var a = rnd(lo, max), b = rnd(lo, max);\n    if (level === 3 && Math.random() < .35) return { t: (a * b) + \" : \" + a, r: b };\n    return { t: a + \" × \" + b, r: a * b };\n  }\n  function paint() {\n    $(\"night\").textContent = night; $(\"fuel\").style.setProperty(\"--w\", fuel + \"%\");\n    var s = .45 + fuel / 100 * .75; $(\"fire\").style.setProperty(\"--s\", s.toFixed(2)); $(\"glow\").style.setProperty(\"--g\", (.25 + fuel / 100 * .9).toFixed(2));\n    $(\"scene\").style.filter = \"brightness(\" + (.55 + fuel / 100 * .55).toFixed(2) + \")\";\n    $(\"e1\").style.opacity = fuel < 45 ? 1 : 0; $(\"e2\").style.opacity = fuel < 25 ? 1 : 0;\n  }\n  function next() {\n    busy = false; cur = question(); typed = \"\"; $(\"q\").textContent = cur.t; $(\"ans\").textContent = \" \"; $(\"ans\").className = \"ans\";\n    limit = Math.max(3500, 9000 - night * 55 - (level - 1) * 800); t0 = performance.now();\n  }\n  function tick(t) {\n    if (!running) return;\n    var k = Math.min(1, Math.max(0, 1 - (t - t0) / limit)); $(\"tm\").style.transform = \"scaleX(\" + k + \")\";\n    if (k <= 0 && !busy) { miss(); }\n    raf = requestAnimationFrame(tick);\n  }\n  function spark() { for (var i = 0; i < 6; i++) { var s = document.createElement(\"span\"); s.className = \"spark\"; s.style.setProperty(\"--dx\", (Math.random() * 120 - 60) + \"px\"); $(\"fire\").appendChild(s); setTimeout(function (x) { return function () { x.remove(); }; }(s), 1200); } }\n  function hit() {\n    busy = true; combo++; var bonus = combo >= 5 ? 4 : 0; fuel = Math.min(100, fuel + 9 + bonus); night++; spark();\n    $(\"ans\").className = \"ans ok\";\n    if (combo >= 3) { $(\"combo\").textContent = \"Серия \" + combo + \"! Огонь сильнее\"; $(\"combo\").style.opacity = 1; setTimeout(function () { $(\"combo\").style.opacity = 0; }, 900); }\n    paint(); if (night > 99) return finish(true); setTimeout(next, 260);\n  }\n  function miss() {\n    busy = true; combo = 0; wrong++; fuel = Math.max(0, fuel - 18); $(\"ans\").className = \"ans bad\"; $(\"ans\").textContent = cur.t + \" = \" + cur.r;\n    paint(); if (fuel <= 0) return finish(false); t0 = performance.now() + 900; setTimeout(next, 900);\n  }\n  function key(k) {\n    if (!running || busy) return;\n    if (/^[0-9]$/.test(k)) { if (typed.length < 4) typed += k; }\n    else if (k === \"Backspace\") typed = typed.slice(0, -1);\n    else if (k === \"Enter\") { if (!typed) return; if (+typed === cur.r) hit(); else miss(); return; }\n    $(\"ans\").textContent = typed || \" \";\n    if (typed && +typed === cur.r) hit();\n  }\n  document.addEventListener(\"keydown\", function (e) { if (/^[0-9]$/.test(e.key) || e.key === \"Backspace\" || e.key === \"Enter\") { e.preventDefault(); key(e.key); } });\n  function start() {\n    night = 1; fuel = 70; combo = 0; wrong = 0; running = true;\n    $(\"start\").hidden = true; $(\"end\").hidden = true; $(\"card\").hidden = false; pad.hidden = false;\n    paint(); next(); cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);\n  }\n  function finish(win) {\n    running = false; cancelAnimationFrame(raf);\n    var got = Math.min(99, night - (win ? 1 : 0)), best = +(store.get(\"n99.best.\" + level) || 0);\n    if (got > best) store.set(\"n99.best.\" + level, got);\n    $(\"card\").hidden = true; pad.hidden = true; $(\"end\").hidden = false;\n    $(\"endT\").textContent = win ? \"Ты выжил 99 ночей!\" : \"Костёр погас\";\n    $(\"endP\").textContent = (win ? \"Рассвет! \" : \"Ты продержался \" + got + \" \" + nights(got) + \". \") + (got > best ? \"Это новый рекорд.\" : \"Рекорд: \" + Math.max(best, got) + \" \" + nights(Math.max(best, got)) + \".\") + (wrong ? \" Ошибок: \" + wrong + \".\" : \"\");\n    paint();\n  }\n  $(\"go\").addEventListener(\"click\", start); $(\"again\").addEventListener(\"click\", start);\n  paint();\n})();\n<\/script>\n<\/body>\n<\/html>\n" }];
+  function renderGames() {
+    const online = !demo && CONFIG.api && S && S.token;
+    const load = () => demo ? Promise.resolve({ ok: true, games: DEMO_GAMES }) : online ? api({ action: "games" }) : Promise.resolve({ ok: true, games: [] });
+    const get = id => demo ? Promise.resolve({ ok: true, html: (DEMO_GAMES.find(g => g.id === id) || {}).html }) : api({ action: "game", id });
+    app.append(h("div", { class: "card", style: "margin-bottom:14px" }, h("h1", { class: "h", style: "font-size:clamp(22px,3vw,32px)" }, "Игры"), h("p", { class: "muted", style: "margin-top:8px" }, "Математика в формате игры. Новые игры от Самира появляются здесь сами.")),
+      MrSamGames.view({ load, get, toast, empty: online ? null : "Игры появятся после входа в кабинет." }));
+  }
+  /* домашка из кабинета учителя (лист «Домашка») + задания из настроек */
+  async function pullHw() {
+    if (!CONFIG.api || demo || !S || !S.token) return;
+    const j = await api({ action: "login", exam: "math" });
+    if (j && j.ok && Array.isArray(j.homework)) { S.serverHw = j.homework; store.save(S); if (view === "hw") render(); }
+  }
+  function hwAll() {
+    const srv = (!demo && S && S.serverHw) || [];
+    const fmt = d => { const x = new Date(d + "T12:00:00"); return isNaN(x) ? d : x.toLocaleDateString("ru-RU", { day: "numeric", month: "long" }); };
+    return srv.map(x => {
+      const tasks = [];
+      if (x.desc) tasks.push(x.desc);
+      (x.parts || []).forEach(p => { const body = p.prompt || p.text || (p.items || []).join("; ") || (p.questions || []).map(q => q.q).join("; ") || (p.words || []).map(w => w[0] + " — " + w[1]).join(", "); tasks.push([p.title, body].filter(Boolean).join(": ")); if (p.url) tasks.push(p.url); });
+      if (x.link) tasks.push("Материал: " + x.link);
+      return { id: x.id, title: x.title, due: x.due ? "до " + fmt(x.due) : "без срока", tasks: tasks.length ? tasks : ["Подробности у Самира"], server: String(x.status || "новое").toLowerCase(), grade: x.grade, comment: x.comment };
+    }).concat(CONFIG.homework);
+  }
+
   /* ---------- homework ---------- */
   function renderHW() {
     app.append(h("div", { class: "card", style: "margin-bottom:14px" }, h("h1", { class: "h", style: "font-size:clamp(22px,3vw,32px)" }, "Домашние задания"), h("p", { class: "muted", style: "margin-top:8px" }, "Реши, напиши ответы или прикрепи фото тетради. Самир проверит и разберёт ошибки на занятии.")));
     const hw = D().hw || (D().hw = {});
-    if (!CONFIG.homework.length) return app.append(h("div", { class: "card empty" }, mascot("cool"), h("p", {}, "Заданий пока нет. Отдыхай")));
-    app.append(h("div", { class: "list" }, CONFIG.homework.map(x => {
-      const st = hw[x.id] || {}, sent = st.status === "sent" || st.status === "done";
+    const HW = hwAll(); if (!HW.length) return app.append(h("div", { class: "card empty" }, mascot("cool"), h("p", {}, "Заданий пока нет. Отдыхай")));
+    app.append(h("div", { class: "list" }, HW.map(x => {
+      const st = hw[x.id] || {}, redo = x.server === "доработать", done = x.server === "проверено" || st.status === "done", sent = !redo && (done || x.server === "на проверке" || st.status === "sent");
       const ta = h("textarea", { class: "input", placeholder: "Ответы по номерам: 1) … 2) …", "aria-label": "Ответы к заданию " + x.title }); ta.value = st.answer || ""; if (sent) ta.disabled = true;
       const fileName = h("span", {}, st.file ? "Файл: " + st.file : "Прикрепить фото");
       const file = h("label", { class: "file" }, h("input", { type: "file", accept: "image/*,.pdf", disabled: sent, onchange: e => { const f = e.target.files[0]; if (!f) return; if (f.size > 8 * 1048576) { toast("Файл больше 8 МБ"); e.target.value = ""; return; } st.file = f.name; fileName.textContent = "Файл: " + f.name; } }), fileName);
       const send = h("button", { class: "btn btn-lime", type: "button", disabled: sent, onclick: () => { if (!ta.value.trim() && !st.file) { toast("Напиши ответы или прикрепи фото"); return; } hw[x.id] = { status: "sent", answer: ta.value.trim(), file: st.file || null, at: new Date().toISOString() }; persist(); api({ action: "math_hw", hw: x.id, answer: ta.value.trim() }); toast("Отправлено Самиру"); go("hw"); } }, sent ? "Отправлено" : "Отправить");
-      return h("article", { class: "hw" }, h("div", { class: "hw-top" }, h("h3", {}, x.title), h("span", { class: "st " + (st.status === "done" ? "st-done" : sent ? "st-sent" : "st-new") }, st.status === "done" ? "Проверено" : sent ? "На проверке" : "Новое · " + x.due)),
-        h("ol", {}, x.tasks.map(t => h("li", {}, t))), ta, h("div", { style: "display:flex;gap:10px;flex-wrap:wrap;align-items:center" }, file, send));
+      return h("article", { class: "hw" }, h("div", { class: "hw-top" }, h("h3", {}, x.title), h("span", { class: "st " + (done ? "st-done" : sent ? "st-sent" : redo ? "st-redo" : "st-new") }, done ? "Проверено" + (x.grade ? " · " + x.grade : "") : sent ? "На проверке" : redo ? "Доработать" : "Новое · " + x.due)),
+        h("ol", {}, x.tasks.map(t => h("li", {}, t))), x.comment ? h("p", { class: "hw-cm" }, "Самир: " + x.comment) : null, ta, h("div", { style: "display:flex;gap:10px;flex-wrap:wrap;align-items:center" }, file, send));
     })));
   }
 
@@ -1574,6 +1672,7 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
   if (location.hash === "#selftest") window.__mathTest = { GEN, parseAns };
   if (location.hash === "#demo" && CONFIG.allowDemo && !S) { demo = makeDemo(); view = "overview"; }
   render();
+  if (S && S.token) pullHw();
   document.addEventListener("keydown", e => { if (e.key === "Escape" && view === "run") { run = null; go("trainer"); } });
 })();
 </script>

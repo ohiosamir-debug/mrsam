@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>99 ночей: таблица умножения</title>
+<meta name="mrsam:topic" content="muldiv">
+<meta name="mrsam:skill" content="Таблица умножения на скорость">
+<meta name="mrsam:levels" content="1:Таблица на 2–5|2:Таблица на 6–9|3:Вся таблица и деление">
 <style>
 :root{--ink:#F4F1E6;--lime:#D5F36A;--ember:#FF9A3C;--night:#0B1A2A}
 *{box-sizing:border-box}
@@ -82,8 +85,9 @@ p{margin:0 0 14px;opacity:.85}
 </div>
 
 <div class="hud">
-  <div class="chip"><small>Ночь</small><b id="night">1</b><small style="display:inline;margin-left:4px">из 99</small></div>
-  <div class="chip"><small>Костёр</small><div class="bar"><i id="fuel"></i></div></div>
+  <div class="chip"><small data-en="Night">Ночь</small><b id="night">1</b><small style="display:inline;margin-left:4px" data-en="of 99">из 99</small></div>
+  <div class="chip"><small data-en="Fire">Костёр</small><div class="bar"><i id="fuel"></i></div></div>
+  <div class="chip" id="goalChip" hidden><small data-en="Samir&#39;s goal">Цель Самира</small><b id="goalN">0</b><small style="display:inline;margin-left:4px" id="goalOf"></small></div>
 </div>
 <div class="combo" id="combo"></div>
 
@@ -96,14 +100,15 @@ p{margin:0 0 14px;opacity:.85}
 
 <div class="screen" id="start">
   <div>
-    <h1>99 <span>ночей</span></h1>
-    <p>Ты в лесу, и единственное спасение это костёр. Каждый верный ответ подкидывает дров. Ошибка или долгий ответ, и огонь слабеет. Продержись 99 ночей.</p>
-    <div class="lv" role="group" aria-label="Уровень">
-      <button type="button" data-l="1" aria-pressed="true">Таблица до 5</button>
-      <button type="button" data-l="2" aria-pressed="false">До 10</button>
-      <button type="button" data-l="3" aria-pressed="false">До 12 и деление</button>
+    <h1 data-en="99 &lt;span&gt;nights&lt;/span&gt;">99 <span>ночей</span></h1>
+    <p data-en="You are lost in the woods, and the campfire is your only hope. Every correct answer adds firewood. A mistake or a slow answer, and the fire dies down. Survive 99 nights.">Ты в лесу, и единственное спасение это костёр. Каждый верный ответ подкидывает дров. Ошибка или долгий ответ, и огонь слабеет. Продержись 99 ночей.</p>
+    <div class="lv" role="group" aria-label="Уровень" data-en-label="Level">
+      <button type="button" data-l="1" aria-pressed="true" data-en="Times 2–5">На 2–5</button>
+      <button type="button" data-l="2" aria-pressed="false" data-en="Times 6–9">На 6–9</button>
+      <button type="button" data-l="3" aria-pressed="false" data-en="Whole table and division">Вся таблица и деление</button>
     </div>
-    <button class="big" id="go" type="button">Разжечь костёр</button>
+    <p id="goal" hidden style="margin:0 0 14px;padding:8px 12px;border-radius:14px;background:rgba(213,243,106,.16);color:var(--lime);font-weight:900"></p>
+    <button class="big" id="go" type="button" data-en="Light the fire">Разжечь костёр</button>
     <p id="best" style="margin:14px 0 0;font-size:14px"></p>
   </div>
 </div>
@@ -111,7 +116,7 @@ p{margin:0 0 14px;opacity:.85}
   <div>
     <h1 id="endT">Костёр погас</h1>
     <p id="endP"></p>
-    <button class="big" id="again" type="button">Ещё раз</button>
+    <button class="big" id="again" type="button" data-en="Play again">Ещё раз</button>
   </div>
 </div>
 
@@ -122,22 +127,39 @@ p{margin:0 0 14px;opacity:.85}
   for (var i = 0; i < 70; i++) { var s = document.createElement("i"); s.style.left = Math.random() * 100 + "%"; s.style.top = Math.random() * 100 + "%"; s.style.animationDelay = (Math.random() * 3) + "s"; st.appendChild(s); }
   var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
   var busy = false, level = 1, night = 1, fuel = 70, cur = null, typed = "", t0 = 0, limit = 9000, raf = 0, combo = 0, wrong = 0, running = false;
+  // настройки из кабинета Mr.Sam: уровень и цель задаёт Самир. Ответы уходят в кабинет, чтобы засчитать прогресс
+  var CFG = window.MRSAM_GAME || {}, goal = +CFG.goal || 0, base = Math.max(0, +CFG.done || 0), okTotal = 0, asked = 0, qStart = 0;   // base: набрано в прошлых заходах
+  if (CFG.level && /^[123]$/.test(String(CFG.level))) level = +CFG.level;
+  var EN = CFG.lang === "en", L = function (ru, en) { return EN ? en : ru; };
+  if (EN) {
+    document.documentElement.lang = "en"; document.title = "99 nights: times tables";
+    document.querySelectorAll("[data-en]").forEach(function (el) { el.innerHTML = el.getAttribute("data-en"); });   // статичные строки из этого файла
+    document.querySelectorAll("[data-en-label]").forEach(function (el) { el.setAttribute("aria-label", el.getAttribute("data-en-label")); });
+  }
+  function post(o) { try { o.type = "mrsam:game"; if (window.parent && window.parent !== window) window.parent.postMessage(o, "*"); } catch (e) {} }
   var pad = $("pad");
   ["1","2","3","4","5","6","7","8","9","⌫","0","OK"].forEach(function (k) {
     var b = document.createElement("button"); b.type = "button"; b.textContent = k; if (k === "OK") b.className = "go";
     b.addEventListener("click", function () { key(k === "⌫" ? "Backspace" : k === "OK" ? "Enter" : k); });
     pad.appendChild(b);
   });
-  document.querySelectorAll(".lv button").forEach(function (b) { b.addEventListener("click", function () { level = +b.dataset.l; document.querySelectorAll(".lv button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); showBest(); }); });
-  function showBest() { var b = store.get("n99.best." + level); $("best").textContent = b ? "Твой рекорд на этом уровне: " + b + " " + nights(+b) : ""; }
-  function nights(n) { var a = n % 10, b = n % 100; return a === 1 && b !== 11 ? "ночь" : a >= 2 && a <= 4 && (b < 10 || b >= 20) ? "ночи" : "ночей"; }
+  document.querySelectorAll(".lv button").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.l === level ? "true" : "false"); b.addEventListener("click", function () { level = +b.dataset.l; document.querySelectorAll(".lv button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); showBest(); }); });
+  function showBest() { var b = store.get("n99.best." + level); $("best").textContent = b ? L("Твой рекорд на этом уровне: ", "Your best on this level: ") + b + " " + nights(+b) : ""; }
+  function nights(n) { if (EN) return n === 1 ? "night" : "nights"; var a = n % 10, b = n % 100; return a === 1 && b !== 11 ? "ночь" : a >= 2 && a <= 4 && (b < 10 || b >= 20) ? "ночи" : "ночей"; }
   showBest();
+  if (goal) { $("goal").hidden = false; $("goal").textContent = L("Задание Самира: " + goal + " верных ответов" + (base ? ", уже есть " + Math.min(base, goal) : ""), "Samir's task: " + goal + " correct answers" + (base ? ", done so far: " + Math.min(base, goal) : "")); $("goalChip").hidden = false; $("goalN").textContent = Math.min(base, goal); $("goalOf").textContent = L("из ", "of ") + goal; }
   function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
   function question() {
-    var max = level === 1 ? 5 : level === 2 ? 10 : 12, lo = night > 30 ? 3 : 2;
-    var a = rnd(lo, max), b = rnd(lo, max);
-    if (level === 3 && Math.random() < .35) return { t: (a * b) + " : " + a, r: b };
-    return { t: a + " × " + b, r: a * b };
+    // 1: множитель 2–5, 2: множитель 6–9, 3: вся таблица 2–9 и деление
+    var a = level === 1 ? rnd(2, 5) : level === 2 ? rnd(6, 9) : rnd(2, 9), b = rnd(night > 30 ? 3 : 2, 9);
+    if (Math.random() < .5) { var t = a; a = b; b = t; }
+    if (level === 3 && Math.random() < .35) return { t: (a * b) + L(" : ", " ÷ ") + a, r: b, div: true, small: Math.max(a, b) <= 5 };
+    return { t: a + " × " + b, r: a * b, small: Math.max(a, b) <= 5 || Math.min(a, b) <= 5 };
+  }
+  function report(ok, given) {
+    asked++; if (ok) okTotal++;
+    post({ event: "answer", q: cur.t.replace(" : ", " ÷ "), a: String(cur.r), given: given, ok: ok, topic: "muldiv", skill: cur.div ? "Деление через таблицу умножения" : "Таблица умножения", err: cur.div ? "div" : "table", tpl: cur.div ? "md.div" : cur.small ? "md.t25" : "md.t69", secs: Math.round((performance.now() - qStart) / 1000) });
+    if (goal) { $("goalN").textContent = Math.min(base + okTotal, goal); if (base + okTotal === goal) { $("combo").textContent = L("Цель Самира выполнена!", "Samir's goal reached!"); $("combo").style.opacity = 1; setTimeout(function () { $("combo").style.opacity = 0; }, 1600); } }
   }
   function paint() {
     $("night").textContent = night; $("fuel").style.setProperty("--w", fuel + "%");
@@ -147,7 +169,7 @@ p{margin:0 0 14px;opacity:.85}
   }
   function next() {
     busy = false; cur = question(); typed = ""; $("q").textContent = cur.t; $("ans").textContent = " "; $("ans").className = "ans";
-    limit = Math.max(3500, 9000 - night * 55 - (level - 1) * 800); t0 = performance.now();
+    limit = Math.max(3500, 9000 - night * 55 - (level - 1) * 800); t0 = performance.now(); qStart = t0;
   }
   function tick(t) {
     if (!running) return;
@@ -157,12 +179,14 @@ p{margin:0 0 14px;opacity:.85}
   }
   function spark() { for (var i = 0; i < 6; i++) { var s = document.createElement("span"); s.className = "spark"; s.style.setProperty("--dx", (Math.random() * 120 - 60) + "px"); $("fire").appendChild(s); setTimeout(function (x) { return function () { x.remove(); }; }(s), 1200); } }
   function hit() {
+    report(true, typed);
     busy = true; combo++; var bonus = combo >= 5 ? 4 : 0; fuel = Math.min(100, fuel + 9 + bonus); night++; spark();
     $("ans").className = "ans ok";
-    if (combo >= 3) { $("combo").textContent = "Серия " + combo + "! Огонь сильнее"; $("combo").style.opacity = 1; setTimeout(function () { $("combo").style.opacity = 0; }, 900); }
+    if (combo >= 3) { $("combo").textContent = L("Серия " + combo + "! Огонь сильнее", "Streak " + combo + "! The fire grows"); $("combo").style.opacity = 1; setTimeout(function () { $("combo").style.opacity = 0; }, 900); }
     paint(); if (night > 99) return finish(true); setTimeout(next, 260);
   }
   function miss() {
+    report(false, typed);
     busy = true; combo = 0; wrong++; fuel = Math.max(0, fuel - 18); $("ans").className = "ans bad"; $("ans").textContent = cur.t + " = " + cur.r;
     paint(); if (fuel <= 0) return finish(false); t0 = performance.now() + 900; setTimeout(next, 900);
   }
@@ -185,8 +209,11 @@ p{margin:0 0 14px;opacity:.85}
     var got = Math.min(99, night - (win ? 1 : 0)), best = +(store.get("n99.best." + level) || 0);
     if (got > best) store.set("n99.best." + level, got);
     $("card").hidden = true; pad.hidden = true; $("end").hidden = false;
-    $("endT").textContent = win ? "Ты выжил 99 ночей!" : "Костёр погас";
-    $("endP").textContent = (win ? "Рассвет! " : "Ты продержался " + got + " " + nights(got) + ". ") + (got > best ? "Это новый рекорд." : "Рекорд: " + Math.max(best, got) + " " + nights(Math.max(best, got)) + ".") + (wrong ? " Ошибок: " + wrong + "." : "");
+    $("endT").textContent = win ? L("Ты выжил 99 ночей!", "You survived 99 nights!") : L("Костёр погас", "The fire went out");
+    $("endP").textContent = EN
+      ? (win ? "Sunrise! " : "You lasted " + got + " " + nights(got) + ". ") + (got > best ? "That is a new record." : "Record: " + Math.max(best, got) + " " + nights(Math.max(best, got)) + ".") + (wrong ? " Mistakes: " + wrong + "." : "") + (goal ? " Correct answers for Samir: " + Math.min(base + okTotal, goal) + " of " + goal + "." : "")
+      : (win ? "Рассвет! " : "Ты продержался " + got + " " + nights(got) + ". ") + (got > best ? "Это новый рекорд." : "Рекорд: " + Math.max(best, got) + " " + nights(Math.max(best, got)) + ".") + (wrong ? " Ошибок: " + wrong + "." : "") + (goal ? " Верных ответов для Самира: " + Math.min(base + okTotal, goal) + " из " + goal + "." : "");
+    post({ event: "finish", correct: okTotal, total: asked, nights: got });
     paint();
   }
   $("go").addEventListener("click", start); $("again").addEventListener("click", start);

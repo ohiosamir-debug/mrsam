@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Кубоград: математика на кубиках</title>
+<meta name="mrsam:topic" content="addsub">
+<meta name="mrsam:skill" content="Сложение, вычитание и умножение на кубиках">
+<meta name="mrsam:levels" content="1:Лёгкий|2:Средний|3:Сложный">
+<style>
+:root{--forest:#153E2D;--lime:#D5F36A;--pink:#FF6FB5;--ink:#10261B;--u:clamp(13px,1.2vw + 6px,22px);
+  --grass:#7BC74D;--grass2:#5FA83A;--dirt:#9A6436;--stone:#9AA4AA;--plank:#C99A5B;--sand:#F3D27A;--gold:#F5C542;--gem:#46D3E6;--wheat:#E9C84B;--leaf:#4CAF50;--water:#5FB8F2}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{font:800 16px/1.4 "Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(180deg,#8FD6FF 0%,#CFEFFF 46%,#E9F7D9 100%);overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #FF8A3D;outline-offset:2px}
+.app{position:fixed;inset:0;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}
+/* верхняя панель */
+.hud{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hud .chip{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:12px;background:rgba(255,255,255,.75);box-shadow:0 3px 0 rgba(16,38,27,.18);font-size:14px}
+.hud .chip b{font-size:16px}
+.hud .title{background:var(--forest);color:#fff}
+.hud .title b{color:var(--lime)}
+.hud .sp{flex:1}
+.ib{width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.75);box-shadow:0 3px 0 rgba(16,38,27,.18);display:grid;place-items:center}
+.ib svg{width:20px;height:20px}
+.dots{display:flex;gap:4px}
+.dots i{width:12px;height:12px;border-radius:3px;background:rgba(16,38,27,.15)}
+.dots i.ok{background:var(--grass)}.dots i.no{background:var(--pink)}.dots i.help{background:#F2B33D}.dots i.now{background:#fff;box-shadow:0 0 0 2px var(--forest)}
+/* мир: награда за верные ответы */
+.world{position:relative;align-self:center;justify-self:center;display:grid;grid-template-columns:repeat(18,var(--w));grid-auto-rows:var(--w);--w:clamp(14px,3.6vw,26px);padding:6px;border-radius:14px;background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+.world i{display:block;border-radius:2px;transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .3s}
+.world i.hid{background:rgba(255,255,255,.28)!important;background-image:none!important;box-shadow:inset 0 0 0 1.5px rgba(16,38,27,.22)!important}
+.b-grass{background:linear-gradient(var(--grass) 0 38%,var(--dirt) 38%);box-shadow:inset -2px -2px 0 rgba(0,0,0,.18)}
+.b-dirt{background:var(--dirt);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2),inset 2px 2px 0 rgba(255,255,255,.12)}
+.b-stone{background:var(--stone);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2),inset 2px 2px 0 rgba(255,255,255,.25)}
+.b-dark{background:#3A3F44;box-shadow:inset 2px 2px 0 rgba(0,0,0,.35)}
+.b-plank{background:repeating-linear-gradient(180deg,var(--plank) 0 30%,#A87A42 30% 34%);box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)}
+.b-roof{background:#D9483B;box-shadow:inset -2px -2px 0 rgba(0,0,0,.22),inset 2px 2px 0 rgba(255,255,255,.2)}
+.b-glass{background:#BFEAFF;box-shadow:inset 0 0 0 2px #7FA9BF}
+.b-door{background:#7A4A22;box-shadow:inset 0 0 0 2px #5A3416}
+.b-leaf{background:var(--leaf);box-shadow:inset -2px -2px 0 rgba(0,0,0,.18),inset 2px 2px 0 rgba(255,255,255,.18)}
+.b-wood{background:#8A5A2B;box-shadow:inset -2px 0 0 rgba(0,0,0,.2)}
+.b-gem{background:var(--stone);background-image:radial-gradient(circle at 35% 40%,var(--gem) 0 18%,transparent 19%),radial-gradient(circle at 68% 66%,var(--gem) 0 16%,transparent 17%);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
+.b-gold{background:var(--stone);background-image:radial-gradient(circle at 40% 35%,var(--gold) 0 18%,transparent 19%),radial-gradient(circle at 65% 70%,var(--gold) 0 15%,transparent 16%);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
+.b-soil{background:repeating-linear-gradient(90deg,#6E4523 0 45%,#5A381B 45% 55%);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.b-wheat{background:#6E4523;background-image:radial-gradient(circle at 30% 30%,#F4D35E 0 22%,transparent 23%),radial-gradient(circle at 70% 65%,#F4D35E 0 22%,transparent 23%),radial-gradient(circle at 70% 25%,#9BD35A 0 14%,transparent 15%),radial-gradient(circle at 28% 72%,#9BD35A 0 14%,transparent 15%);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
+.b-carrot{background:#6E4523;background-image:radial-gradient(circle at 50% 40%,#FF8A3D 0 26%,transparent 27%),radial-gradient(circle at 50% 16%,#58B947 0 16%,transparent 17%);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
+.b-water{background:var(--water);box-shadow:inset 0 2px 0 rgba(255,255,255,.4)}
+.b-sky{background:transparent}
+/* задача */
+.play{min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;justify-items:center}
+.task{display:flex;align-items:center;gap:12px;padding:8px 18px;border-radius:18px;background:#fff;box-shadow:0 5px 0 rgba(16,38,27,.18);font:900 clamp(30px,7vw,48px)/1 system-ui,sans-serif;letter-spacing:-.01em}
+.ansbox{min-width:2.4em;padding:4px 10px;border-radius:12px;background:#F1F5EA;color:var(--forest);text-align:center;box-shadow:inset 0 2px 0 rgba(0,0,0,.08)}
+.ansbox.ok{background:var(--lime)}.ansbox.no{background:#FFD6E8;animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.stage{width:100%;min-height:0;overflow:auto;display:flex;align-items:center;justify-content:center;padding:4px}
+.board{display:flex;align-items:flex-end;justify-content:center;gap:clamp(10px,3vw,28px);flex-wrap:wrap;padding:12px 14px;border-radius:20px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+.op{font:900 34px/1 system-ui,sans-serif;color:var(--forest);align-self:center}
+.pile{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:60px}
+.pile small{font:900 13px/1 system-ui,sans-serif;color:rgba(16,38,27,.7)}
+.pile .n{font:900 22px/1 system-ui,sans-serif}
+.stack{display:flex;flex-direction:column-reverse;gap:3px;align-items:center}
+.ones{display:grid;grid-template-columns:repeat(5,var(--u));gap:2px;justify-content:center}
+.huns{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:calc(var(--u) * 10)}
+.cube{width:var(--u);height:var(--u);border-radius:3px;background:var(--c,var(--grass));box-shadow:inset calc(var(--u) * -.2) calc(var(--u) * -.2) 0 rgba(0,0,0,.22),inset calc(var(--u) * .14) calc(var(--u) * .14) 0 rgba(255,255,255,.38)}
+.rod{display:flex;gap:0;border-radius:4px;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.rod .cube{border-radius:0}
+.rod .cube:first-child{border-radius:4px 0 0 4px}.rod .cube:last-child{border-radius:0 4px 4px 0}
+.hun{width:calc(var(--u) * 3);height:calc(var(--u) * 3);border-radius:6px;display:grid;place-items:center;font:900 calc(var(--u) * .9)/1 system-ui,sans-serif;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25);background:var(--c,var(--grass));box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 4px 4px 0 rgba(255,255,255,.3),0 3px 0 rgba(0,0,0,.2)}
+.c1{--c:#6CC24A}.c2{--c:#F2B33D}.c3{--c:#46B8E6}.c4{--c:#B48CFF}
+.glow{animation:gl 1s ease-in-out infinite alternate}
+@keyframes gl{to{filter:brightness(1.25) drop-shadow(0 0 6px #fff)}}
+.pop{animation:pp .5s cubic-bezier(.3,1.7,.5,1)}
+@keyframes pp{from{transform:scale(.2)}}
+.gone{opacity:.18;filter:grayscale(1)}
+.ghost .cube,.ghost .hun{background:transparent;box-shadow:inset 0 0 0 2px rgba(16,38,27,.35)}
+.table{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border-radius:16px;background:repeating-linear-gradient(90deg,#C99A5B 0 18px,#B98848 18px 20px);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.table small{color:#3B2410}
+.field{display:grid;gap:3px;padding:8px;border-radius:12px;background:#6E4523}
+.field i{width:var(--u);height:var(--u);border-radius:3px;background:linear-gradient(180deg,#8EDB57 0 45%,#E9C84B 45%);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
+.field i.on{background:linear-gradient(180deg,#B9F07C 0 45%,#FFE36B 45%);box-shadow:0 0 0 2px #fff}
+.field .rowlab{width:auto;height:auto;background:none;box-shadow:none;color:#FFE9A8;font:900 12px/var(--u) system-ui,sans-serif;padding-left:6px;border-radius:0}
+.say{min-height:2.6em;max-width:640px;text-align:center;font-size:clamp(15px,3.6vw,18px);padding:0 10px;color:var(--forest)}
+.say b{color:#B2367A}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;border-radius:14px;border:0;background:#fff;box-shadow:0 4px 0 rgba(16,38,27,.25);font-weight:900}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(16,38,27,.25)}
+.btn.lime{background:var(--lime);box-shadow:0 4px 0 #9CBF3A;color:var(--forest)}
+.btn.dark{background:var(--forest);color:#fff;box-shadow:0 4px 0 #0A1F16}
+/* цифры */
+.pad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;width:min(560px,100%);justify-self:center}
+.pad button{min-height:52px;border-radius:14px;border:0;background:#fff;box-shadow:0 4px 0 rgba(16,38,27,.22);font:900 22px/1 system-ui,sans-serif}
+.pad button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(16,38,27,.22)}
+.pad .go{background:var(--lime);color:var(--forest);box-shadow:0 4px 0 #9CBF3A}
+.pad .del{background:#FFE6F1}
+@media (min-width:900px){.app{grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:auto auto minmax(0,1fr)}.hud,.world{grid-column:1/-1}.play{grid-column:1}.pad{grid-column:2;grid-row:3;align-self:center;grid-template-columns:repeat(3,1fr);width:100%}.pad button{min-height:64px}}
+@media (max-width:420px){:root{--u:12px}.task{padding:6px 12px}.pad button{min-height:46px;font-size:20px}}
+@media (max-height:640px) and (max-width:899px){.world{--w:12px}.pad button{min-height:42px}}
+/* экраны */
+.screen{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:rgba(10,30,20,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);overflow:auto}
+.panel{width:min(620px,100%);padding:22px;border-radius:26px;background:#fff;box-shadow:0 8px 0 rgba(16,38,27,.25)}
+.panel h1{margin:0 0 6px;font:900 clamp(28px,6vw,40px)/1 system-ui,sans-serif;text-transform:uppercase;letter-spacing:-.02em;color:var(--forest)}
+.panel h1 span{color:#3FA34D}
+.panel p{margin:0 0 12px;font-weight:700}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.mode{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:12px;border-radius:18px;border:3px solid transparent;background:#F3F7EC;box-shadow:0 4px 0 rgba(16,38,27,.15)}
+.mode[aria-pressed="true"]{border-color:var(--forest);background:#EEF8D6}
+.mode b{font-size:17px}
+.mode small{font-weight:700;color:#4E6157;line-height:1.3}
+.mode .mi{display:flex;gap:2px;height:22px;align-items:flex-end}
+.mode .mi i{width:10px;height:10px;border-radius:2px;background:var(--c)}
+.lvls{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
+.lvls button{min-height:42px;padding:0 14px;border-radius:12px;border:2px solid rgba(16,38,27,.15);background:#fff;font-weight:900}
+.lvls button[aria-pressed="true"]{background:var(--forest);color:#fff;border-color:var(--forest)}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 14px}
+.how div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border-radius:14px;background:#F6F4EF;font-size:13px;text-align:center}
+.goalp{padding:8px 12px;border-radius:12px;background:#EEF8D6;color:var(--forest)}
+.stars{display:flex;gap:6px;justify-content:center;margin:6px 0 12px}
+.stars svg{width:48px;height:48px}
+@media (max-width:560px){.modes{grid-template-columns:minmax(0,1fr)}.mode{flex-direction:row;align-items:center}.mode small{display:none}.how div{padding:8px 4px;font-size:11.5px}.panel{padding:18px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app" hidden>
+  <div class="hud">
+    <span class="chip title"><b id="mName">Стройка</b><span id="mLv">До 20</span></span>
+    <span class="chip"><span class="dots" id="dots" aria-hidden="true"></span><span id="pos">1/10</span></span>
+    <span class="chip" id="goalChip" hidden><span data-en="Samir&#39;s goal:">Цель Самира:</span> <b id="goalN">0</b>/<span id="goalOf">0</span></span>
+    <span class="sp"></span>
+    <button class="ib" id="snd" type="button" aria-label="Выключить звук"></button>
+    <button class="ib" id="menuB" type="button" aria-label="Меню" data-en-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <div class="world" id="world" aria-hidden="true"></div>
+  <div class="play">
+    <div class="task" aria-live="polite"><span id="q">27 + 15</span><span>=</span><span class="ansbox" id="ans">?</span></div>
+    <div class="stage"><div class="board" id="board"></div></div>
+    <div>
+      <p class="say" id="say" role="status"></p>
+      <div class="ctrl"><button class="btn" id="hintB" type="button" data-en="Show me with cubes">Подсказка на кубиках</button><button class="btn dark" id="stepB" type="button" hidden>Дальше</button><button class="btn lime" id="nextB" type="button" hidden data-en="Next problem">Следующий пример</button></div>
+    </div>
+  </div>
+  <div class="pad" id="pad" aria-label="Цифры" data-en-label="Digits"></div>
+</div>
+
+<div class="screen" id="menu">
+  <div class="panel">
+    <h1 data-en="Cube&lt;span&gt;town&lt;/span&gt;">Кубо<span>град</span></h1>
+    <p data-en="Solve problems with cubes and build your own world. Every correct answer adds blocks.">Решай примеры на кубиках и строй свой мир. Каждый верный ответ добавляет блоки.</p>
+    <div class="how">
+      <div><span class="cube c1" style="--u:18px"></span><span data-en="1 cube = 1">1 кубик = 1</span></div>
+      <div><span class="rod c1" id="howRod"></span><span data-en="rod = 10 cubes">стержень = 10 кубиков</span></div>
+      <div><span class="hun c1" style="--u:16px">100</span><span data-en="block = 10 rods">блок = 10 стержней</span></div>
+    </div>
+    <div class="modes" id="modes"></div>
+    <p style="margin:0 0 4px" data-en="Level">Уровень</p>
+    <div class="lvls" id="lvls"></div>
+    <p class="goalp" id="goalP" hidden></p>
+    <button class="btn lime" id="start" type="button" style="min-height:54px;padding:0 26px;font-size:17px" data-en="Start">Начать</button>
+  </div>
+</div>
+
+<div class="screen" id="end" hidden>
+  <div class="panel" style="text-align:center">
+    <h1 id="endT">Раунд пройден</h1>
+    <div class="stars" id="stars"></div>
+    <p id="endP"></p>
+    <div class="ctrl"><button class="btn lime" id="again" type="button" data-en="Another round">Ещё раунд</button><button class="btn" id="toMenu" type="button" data-en="Change mode">Другой режим</button></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+  var rnd = function (a, b) { return a + Math.floor(Math.random() * (b - a + 1)); };
+  var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  // настройки из кабинета Mr.Sam: режим, уровень и цель задаёт Самир; ответы уходят в кабинет
+  var CFG = window.MRSAM_GAME || {};
+  var EN = CFG.lang === "en", L = function (ru, en) { return EN ? en : ru; };
+  if (EN) {
+    document.documentElement.lang = "en"; document.title = "Cubetown: math with cubes";
+    document.querySelectorAll("[data-en]").forEach(function (n) { n.innerHTML = n.getAttribute("data-en"); });   // статичные строки из этого файла
+    document.querySelectorAll("[data-en-label]").forEach(function (n) { n.setAttribute("aria-label", n.getAttribute("data-en-label")); });
+  }
+  function post(o) { try { o.type = "mrsam:game"; if (window.parent && window.parent !== window) window.parent.postMessage(o, "*"); } catch (e) {} }
+
+  var MODES = {
+    add: { name: L("Стройка", "Building"), desc: L("Складывай кубики. 10 кубиков собираются в стержень.", "Add the cubes. 10 cubes join into a rod."), topic: "addsub", err: "carry", skill: ["Сложение с переходом через десяток", "Сложение двузначных с переходом", "Сложение трёхзначных чисел"], tpl: ["as.carry", "as.add2", "as.add2"], lv: EN ? ["Up to 20", "Two-digit", "Up to 1000"] : ["До 20", "Двузначные", "До 1000"], col: ["#6CC24A", "#F2B33D", "#46B8E6"] },
+    sub: { name: L("Шахта", "Mine"), desc: L("Забирай кубики. Не хватает, разбей стержень на 10.", "Take cubes away. Not enough? Break a rod into 10."), topic: "addsub", err: "borrow", skill: ["Вычитание с переходом через десяток", "Вычитание двузначных с заёмом", "Вычитание трёхзначных чисел"], tpl: ["as.sub20", "as.sub2", "as.3d"], lv: EN ? ["Up to 20", "Two-digit", "Up to 1000"] : ["До 20", "Двузначные", "До 1000"], col: ["#9AA4AA", "#46D3E6", "#F5C542"] },
+    mul: { name: L("Ферма", "Farm"), desc: L("Сажай грядки рядами и считай ряды.", "Plant the beds in rows and count by rows."), topic: "muldiv", err: "table", skill: ["Таблица умножения на 2–5", "Таблица умножения на 6–9", "Таблица умножения"], tpl: ["md.t25", "md.t69", "md.t69"], lv: EN ? ["Times 2, 3, 4, 5", "Times 6, 7, 8, 9", "Whole table"] : ["На 2, 3, 4, 5", "На 6, 7, 8, 9", "Вся таблица"], col: ["#8EDB57", "#E9C84B", "#FF8A3D"] }
+  };
+  var mode = MODES[CFG.mode] ? CFG.mode : "add", level = /^[123]$/.test(String(CFG.level)) ? +CFG.level : 1;
+  var goal = +CFG.goal || 0, goalOk = Math.max(0, +CFG.done || 0), ROUND = 10, fixed = !!(MODES[CFG.mode] && goal);   // done: сколько уже набрано в прошлых заходах
+  var task = null, typed = "", tries = 0, hintUsed = false, first = null, results = [], idx = 0, steps = [], stepI = -1, tq = 0, locked = false, stepTimer = 0, worldShown = 0, seen = {};
+
+  /* ---------- звук ---------- */
+  var ac = null, soundOn = store.get("kg.sound") !== "0";
+  function tone(f, d, type, v, when) {
+    if (!soundOn) return;
+    try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var t = ac.currentTime + (when || 0), o = ac.createOscillator(), g = ac.createGain(); o.type = type || "square"; o.frequency.setValueAtTime(f, t); g.gain.setValueAtTime(v || .06, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d); } catch (e) {}
+  }
+  var sfx = { ok: function () { tone(523, .12); tone(659, .12, "square", .06, .1); tone(784, .2, "square", .06, .2); }, no: function () { tone(180, .25, "sawtooth", .05); }, pop: function () { tone(880, .08, "triangle", .08); }, craft: function () { tone(392, .08); tone(523, .08, "square", .06, .08); tone(1046, .16, "triangle", .07, .16); }, win: function () { [523, 659, 784, 1046].forEach(function (f, i) { tone(f, .22, "square", .06, i * .14); }); } };
+  var SND_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+  var SND_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+  function paintSnd() { $("snd").innerHTML = soundOn ? SND_ON : SND_OFF; $("snd").setAttribute("aria-label", soundOn ? L("Выключить звук", "Sound off") : L("Включить звук", "Sound on")); }
+  $("snd").addEventListener("click", function () { soundOn = !soundOn; store.set("kg.sound", soundOn ? "1" : "0"); paintSnd(); });
+  paintSnd();
+
+  /* ---------- кубики ---------- */
+  function cube(cls) { return el("span", "cube " + (cls || "")); }
+  function rod(cls) { var r = el("span", "rod " + (cls || "")); for (var i = 0; i < 10; i++) r.appendChild(cube()); return r; }
+  function hun(cls) { return el("span", "hun " + (cls || ""), "100"); }
+  /** число в виде блоков: сотни, стержни-десятки, кубики */
+  function pile(n, cls, label, opt) {
+    opt = opt || {};
+    var p = el("div", "pile"), h = Math.floor(n / 100), t = Math.floor(n / 10) % 10, o = n % 10;
+    if (opt.t != null) { h = opt.h || 0; t = opt.t; o = opt.o; }
+    if (h) { var hs = el("div", "huns"); for (var i = 0; i < h; i++) hs.appendChild(hun(cls + (opt.hGone && i >= h - opt.hGone ? " gone" : "") + (opt.hNew && i >= h - opt.hNew ? " pop glow" : ""))); p.appendChild(hs); }
+    if (t) { var st = el("div", "stack"); for (var k = 0; k < t; k++) st.appendChild(rod(cls + (opt.tGone && k >= t - opt.tGone ? " gone" : "") + (opt.tNew && k >= t - opt.tNew ? " pop glow" : ""))); p.appendChild(st); }
+    if (o) { var on = el("div", "ones"); for (var m = 0; m < o; m++) { var c = cube(cls + (opt.oGone && m >= o - opt.oGone ? " gone" : "") + (opt.oGlow && m < opt.oGlow ? " glow" : "") + (opt.oNew && m >= o - opt.oNew ? " pop" : "")); on.appendChild(c); } p.appendChild(on); }
+    if (!h && !t && !o) p.appendChild(el("small", "", L("пусто", "empty")));
+    if (label != null) p.appendChild(el("small", "", label));
+    return p;
+  }
+  function board() { var b = $("board"); b.innerHTML = ""; for (var i = 0; i < arguments.length; i++) if (arguments[i]) b.appendChild(arguments[i]); }
+  function op(t) { return el("span", "op", t); }
+  var digits = function (n) { return { h: Math.floor(n / 100), t: Math.floor(n / 10) % 10, o: n % 10 }; };
+  var plTail = function (n, a, b, c) { var m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? b : c; };
+  var en1 = function (n, one, many) { return n === 1 ? one : many; };
+  var kub = function (n) { return n + " " + (EN ? en1(n, "cube", "cubes") : plTail(n, "кубик", "кубика", "кубиков")); };
+  var str = function (n) { return n + " " + (EN ? en1(n, "rod", "rods") : plTail(n, "стержень", "стержня", "стержней")); };
+  var blk = function (n) { return n + " " + (EN ? en1(n, "hundred-block", "hundred-blocks") : plTail(n, "блок-сотня", "блока-сотни", "блоков-сотен")); };
+  var rowsOf = function (r, c) { return EN ? r + " " + en1(r, "row", "rows") + " of " + c : r + " " + plTail(r, "ряд", "ряда", "рядов") + " по " + c; };
+
+  /* ---------- примеры ---------- */
+  function gen() {
+    var a, b, t, guard = 0;
+    do {
+      if (mode === "add") {
+        if (level === 1) { a = rnd(2, 9); b = rnd(Math.max(2, 10 - a), 9); }
+        else if (level === 2) { var o1 = rnd(2, 9), o2 = rnd(Math.random() < .75 ? 10 - o1 : 1, 9), t1 = rnd(1, 6), t2 = rnd(1, 8 - t1); a = t1 * 10 + o1; b = t2 * 10 + o2; }
+        else { a = rnd(120, 580); b = rnd(35, 380); if (Math.random() < .6 && a % 10) b = b - (b % 10) + rnd(10 - (a % 10), 9); }
+        t = { a: a, b: b, r: a + b, txt: a + " + " + b };
+      } else if (mode === "sub") {
+        if (level === 1) { var on = rnd(1, 8); a = 10 + on; b = rnd(on + 1, 9); }
+        else if (level === 2) { var p1 = rnd(0, 7), p2 = rnd(p1 + 1, 9), q2 = rnd(1, 6), q1 = rnd(q2 + 1, 9); a = q1 * 10 + p1; b = q2 * 10 + p2; }
+        else { a = rnd(300, 980); b = rnd(40, a - 60); if (Math.random() < .7 && a % 10 < 9) b = b - (b % 10) + rnd(a % 10 + 1, 9); }
+        t = { a: a, b: b, r: a - b, txt: a + " − " + b };
+      } else {
+        a = level === 1 ? rnd(2, 5) : level === 2 ? rnd(6, 9) : rnd(2, 9); b = rnd(2, 9);
+        if (level === 3 && Math.random() < .5) { var s = a; a = b; b = s; }
+        t = { a: a, b: b, r: a * b, txt: a + " × " + b };
+      }
+    } while ((seen[t.txt] || t.r <= 0 || t.r >= 1000) && ++guard < 40);
+    seen[t.txt] = 1;
+    return t;
+  }
+
+  /* ---------- объяснение на кубиках ---------- */
+  function scene0() {
+    var t = task;
+    if (mode === "add") board(pile(t.a, "c1", L("первое: ", "first: ") + t.a), op("+"), pile(t.b, "c2", L("второе: ", "second: ") + t.b));
+    else if (mode === "sub") board(pile(t.a, "c3", L("есть: ", "have: ") + t.a), op("−"), pile(t.b, "c4 ghost", L("забрать: ", "take away: ") + t.b));
+    else board(field(t.a, t.b, 0));
+  }
+  function field(rows, cols, lit) {
+    var f = el("div", "field"); f.style.gridTemplateColumns = "repeat(" + cols + ",var(--u)) auto";
+    for (var r = 0; r < rows; r++) { for (var c = 0; c < cols; c++) f.appendChild(el("i", r < lit ? "on" : "")); f.appendChild(el("i", "rowlab", r < lit ? String((r + 1) * cols) : "")); }
+    var wrap = el("div", "pile"); wrap.appendChild(f); wrap.appendChild(el("small", "", rowsOf(rows, cols))); return wrap;
+  }
+  function addSteps(t) {
+    var A = digits(t.a), Bd = digits(t.b), S = [], ones = A.o + Bd.o, carry = ones >= 10 ? 1 : 0, tens = A.t + Bd.t + carry, carry2 = tens >= 10 ? 1 : 0;
+    S.push({ say: L("Сначала <b>кубики</b>: ", "First the <b>cubes</b>: ") + A.o + " + " + Bd.o + " = " + ones + ".", draw: function () { board(pile(t.a - A.o, "c1", L("первое без кубиков", "first without cubes")), op("+"), pile(t.b - Bd.o, "c2", L("второе без кубиков", "second without cubes")), op("→"), tableBox(pile(ones, "c3", kub(ones), { t: 0, o: ones, oGlow: ones >= 10 ? 10 : 0 }), L("верстак", "workbench"))); } });
+    if (carry) S.push({ say: L("<b>10 кубиков = 1 стержень.</b> Крафтим: остаётся " + kub(ones - 10) + ".", "<b>10 cubes = 1 rod.</b> Craft it: " + kub(ones - 10) + " left."), sfx: "craft", draw: function () { board(pile(t.a - A.o, "c1", ""), op("+"), pile(t.b - Bd.o, "c2", ""), op("→"), tableBox(pile(10 + ones - 10, "c3", L("1 стержень и ", "1 rod and ") + kub(ones - 10), { t: 1, o: ones - 10, tNew: 1 }), L("верстак", "workbench"))); } });
+    if (A.h || Bd.h || A.t || Bd.t) S.push({ say: L("Теперь <b>стержни</b>: ", "Now the <b>rods</b>: ") + A.t + " + " + Bd.t + (carry ? L(" + 1 новый", " + 1 new") : "") + " = " + tens + ".", draw: function () { board(tableBox(pile(0, "c3", str(tens) + L(" и ", " and ") + kub(ones % 10), { h: 0, t: Math.min(tens, 19), o: ones % 10, tNew: carry }), L("вместе", "together"))); } });
+    if (carry2) S.push({ say: L("<b>10 стержней = 1 блок-сотня.</b> Остаётся " + str(tens - 10) + ".", "<b>10 rods = 1 hundred-block.</b> " + str(tens - 10) + " left."), sfx: "craft", draw: function () { board(tableBox(pile(0, "c3", "", { h: 1, t: tens - 10, o: ones % 10, hNew: 1 }), L("крафт сотни", "crafting a hundred"))); } });
+    if (A.h || Bd.h) S.push({ say: L("<b>Сотни</b>: ", "<b>Hundreds</b>: ") + A.h + " + " + Bd.h + (carry2 ? L(" + 1 новая", " + 1 new") : "") + " = " + (A.h + Bd.h + carry2) + ".", draw: function () { board(tableBox(pile(t.r, "c3", "", { h: A.h + Bd.h + carry2, t: tens % 10, o: ones % 10, hNew: carry2 }), L("вместе", "together"))); } });
+    S.push({ say: L("Считаем, что получилось: <b>", "Count what we got: <b>") + t.r + "</b>.", final: true, draw: function () { board(pile(t.r, "c3", t.a + " + " + t.b + " = " + t.r)); } });
+    return S;
+  }
+  function subSteps(t) {
+    var A = digits(t.a), Bd = digits(t.b), S = [], borrow = A.o < Bd.o ? 1 : 0, o1 = A.o + borrow * 10, t1 = A.t - borrow, borrow2 = t1 < Bd.t ? 1 : 0, t2 = t1 + borrow2 * 10, h1 = A.h - borrow2;
+    if (borrow) {
+      S.push({ say: L("Кубиков " + A.o + ", а забрать нужно " + Bd.o + ". <b>Не хватает: разбей один стержень на 10 кубиков.</b>", "There are " + kub(A.o) + ", but we take away " + Bd.o + ". <b>Not enough: break one rod into 10 cubes.</b>"), sfx: "craft", draw: function () { board(pile(0, "c3", L("стало ", "now ") + kub(o1), { h: A.h, t: Math.max(0, A.t - 1), o: o1, oNew: 10 }), op("−"), pile(t.b, "c4 ghost", L("забрать: ", "take away: ") + t.b)); } });
+    }
+    S.push({ say: L("Забираем ", "Take away ") + kub(Bd.o) + ": " + o1 + " − " + Bd.o + " = " + (o1 - Bd.o) + ".", sfx: "pop", draw: function () { board(pile(0, "c3", L("кубиков осталось ", "cubes left: ") + (o1 - Bd.o), { h: A.h, t: t1, o: o1, oGone: Bd.o })); } });
+    if (borrow2) S.push({ say: L("Стержней " + t1 + ", а забрать " + Bd.t + ". <b>Разбей блок-сотню на 10 стержней.</b>", "There are " + str(t1) + ", but we take away " + Bd.t + ". <b>Break a hundred-block into 10 rods.</b>"), sfx: "craft", draw: function () { board(pile(0, "c3", L("стало ", "now ") + str(t2), { h: h1, t: t2, o: o1 - Bd.o, tNew: 10 })); } });
+    if (Bd.t) S.push({ say: L("Забираем ", "Take away ") + str(Bd.t) + ": " + t2 + " − " + Bd.t + " = " + (t2 - Bd.t) + ".", sfx: "pop", draw: function () { board(pile(0, "c3", L("стержней осталось ", "rods left: ") + (t2 - Bd.t), { h: h1, t: t2, o: o1 - Bd.o, tGone: Bd.t })); } });
+    if (Bd.h) S.push({ say: L("Забираем ", "Take away ") + blk(Bd.h) + ": " + h1 + " − " + Bd.h + " = " + (h1 - Bd.h) + ".", sfx: "pop", draw: function () { board(pile(0, "c3", "", { h: h1, t: t2 - Bd.t, o: o1 - Bd.o, hGone: Bd.h })); } });
+    S.push({ say: L("Осталось <b>" + t.r + "</b>.", "<b>" + t.r + "</b> left."), final: true, draw: function () { board(pile(t.r, "c3", t.a + " − " + t.b + " = " + t.r)); } });
+    return S;
+  }
+  function mulSteps(t) {
+    var S = [], i;
+    S.push({ say: rowsOf(t.a, t.b) + L(". <b>Считаем рядами</b>, а не по одной клетке.", ". <b>Count by rows</b>, not one square at a time."), draw: function () { board(field(t.a, t.b, 0)); } });
+    for (i = 1; i <= t.a; i++) (function (k) {
+      var seq = []; for (var j = 1; j <= k; j++) seq.push(j * t.b);
+      S.push({ say: L("Ряд ", "Row ") + k + ": " + seq.join(", ") + (k === t.a ? "." : "…"), auto: k < t.a, sfx: "pop", draw: function () { board(field(t.a, t.b, k)); } });
+    })(i);
+    if (t.a === 9 || t.b === 9) { var o = t.a === 9 ? t.b : t.a; S.push({ say: L("Трюк с девяткой: 9 × ", "Nine trick: 9 × ") + o + " = 10 × " + o + " − " + o + " = " + (10 * o) + " − " + o + " = <b>" + t.r + "</b>.", draw: function () { board(field(t.a, t.b, t.a)); } }); }
+    S.push({ say: t.a + " × " + t.b + " = <b>" + t.r + "</b>.", final: true, draw: function () { board(field(t.a, t.b, t.a)); } });
+    return S;
+  }
+  function tableBox(content, label) { var b = el("div", "table"); b.appendChild(content); b.appendChild(el("small", "", label)); return b; }
+  function startSteps(auto) {
+    steps = mode === "add" ? addSteps(task) : mode === "sub" ? subSteps(task) : mulSteps(task); stepI = -1; hintUsed = true; $("hintB").hidden = true; nextStep();
+  }
+  function nextStep() {
+    clearTimeout(stepTimer);
+    stepI++; if (stepI >= steps.length) { $("stepB").hidden = true; return; }
+    var s = steps[stepI]; s.draw(); $("say").innerHTML = s.say; if (s.sfx) sfx[s.sfx]();
+    var last = stepI === steps.length - 1;
+    $("stepB").hidden = last || s.auto; $("stepB").textContent = stepI === steps.length - 2 ? L("Показать ответ", "Show the answer") : L("Дальше", "Next");
+    if (s.auto) stepTimer = setTimeout(nextStep, 650);
+    if (last && !locked) $("say").innerHTML += L(" Теперь введи ответ.", " Now type the answer.");
+  }
+  $("hintB").addEventListener("click", function () { if (!locked) startSteps(); });
+  $("stepB").addEventListener("click", nextStep);
+
+  /* ---------- мир: верные ответы добавляют блоки ---------- */
+  var W = 18, H = 7, worldCells = [], buildOrder = [];
+  function makeWorld() {
+    var w = $("world"); w.innerHTML = ""; worldCells = []; buildOrder = [];
+    var grid = [];
+    for (var y = 0; y < H; y++) { grid.push([]); for (var x = 0; x < W; x++) grid[y].push("sky"); }
+    var inB = {};
+    var put = function (x, y, t, build) { grid[y][x] = t; if (build && !inB[x + "," + y]) { inB[x + "," + y] = 1; buildOrder.push([x, y]); } };
+    if (mode === "add") {   // стройка: дом, дерево, колодец
+      for (var x = 0; x < W; x++) put(x, 6, "grass");
+      var house = [];
+      for (var hx = 3; hx <= 9; hx++) house.push([hx, 5, "plank"]);
+      for (var hy = 4; hy >= 2; hy--) { house.push([3, hy, "plank"]); house.push([9, hy, "plank"]); }
+      [[4, 5, "plank"], [5, 5, "door"], [5, 4, "door"], [6, 5, "plank"], [7, 5, "plank"], [8, 5, "plank"], [4, 4, "plank"], [6, 4, "plank"], [7, 4, "glass"], [8, 4, "plank"], [4, 3, "plank"], [5, 3, "plank"], [6, 3, "plank"], [7, 3, "plank"], [8, 3, "plank"], [4, 2, "glass"], [5, 2, "plank"], [6, 2, "plank"], [7, 2, "plank"], [8, 2, "glass"]].forEach(function (c) { house.push(c); });
+      for (var rx = 2; rx <= 10; rx++) house.push([rx, 1, "roof"]);
+      for (var rx2 = 4; rx2 <= 8; rx2++) house.push([rx2, 0, "roof"]);
+      [[14, 5, "wood"], [14, 4, "wood"], [14, 3, "wood"], [13, 2, "leaf"], [14, 2, "leaf"], [15, 2, "leaf"], [13, 1, "leaf"], [14, 1, "leaf"], [15, 1, "leaf"], [14, 0, "leaf"], [12, 3, "leaf"], [16, 3, "leaf"]].forEach(function (c) { house.push(c); });
+      house.forEach(function (c) { put(c[0], c[1], c[2], true); });
+    } else if (mode === "sub") {   // шахта: копаем камень, внутри руда
+      for (var y2 = 0; y2 < H; y2++) for (var x2 = 0; x2 < W; x2++) put(x2, y2, y2 === 0 ? "grass" : y2 === 1 ? "dirt" : "stone");
+      var path = [];
+      for (var d = 1; d < H; d++) { path.push([8, d]); path.push([9, d]); }
+      for (var side = 1; side <= 7; side++) { path.push([8 - side, 3]); path.push([9 + side, 5]); path.push([8 - side, 5]); }
+      path.forEach(function (c) { buildOrder.push([c[0], c[1]]); });
+      buildOrder.forEach(function (c, i) { if (i % 5 === 3) grid[c[1]][c[0]] = "gem"; else if (i % 7 === 5) grid[c[1]][c[0]] = "gold"; });
+    } else {   // ферма сверху: грядки засаживаются рядами, посередине канал с водой
+      for (var gy = 0; gy < H; gy++) for (var gx = 0; gx < W; gx++) {
+        if (gx === 8 || gx === 9) put(gx, gy, "water");
+        else put(gx, gy, gy % 3 === 2 ? "carrot" : "wheat", true);
+      }
+    }
+    for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) { var c = el("i"); c.dataset.t = grid[yy][xx]; worldCells.push(c); w.appendChild(c); }
+    worldShown = 0; paintWorld(true);
+  }
+  function cellAt(x, y) { return worldCells[y * W + x]; }
+  function paintWorld(initial) {
+    var inOrder = {}; buildOrder.forEach(function (c, i) { inOrder[c[0] + "," + c[1]] = i; });
+    var per = Math.ceil(buildOrder.length / ROUND), shown = Math.min(buildOrder.length, worldShown * per);
+    worldCells.forEach(function (c, i) {
+      var x = i % W, y = Math.floor(i / W), k = inOrder[x + "," + y], t = c.dataset.t;
+      if (mode === "sub") { var dug = k != null && k < shown; c.className = dug ? (t === "gem" || t === "gold" ? "b-dark" : "b-dark") : "b-" + (t === "gem" || t === "gold" ? "stone" : t); if (dug && (t === "gem" || t === "gold")) c.className = "b-" + t; }
+      else if (mode === "mul") c.className = k != null && k >= shown ? "b-soil" : "b-" + t + (k != null && k >= shown - per && !initial ? " pop" : "");
+      else c.className = "b-" + t + (k != null && k >= shown ? " hid" : "");
+    });
+  }
+
+  /* ---------- игра ---------- */
+  var pad = $("pad");
+  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "OK"].forEach(function (k) {
+    var b = el("button", k === "OK" ? "go" : k === "⌫" ? "del" : "", k); b.type = "button"; if (k === "⌫") b.setAttribute("aria-label", L("Стереть", "Delete"));
+    b.addEventListener("click", function () { press(k === "⌫" ? "Backspace" : k === "OK" ? "Enter" : k); }); pad.appendChild(b);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (!$("menu").hidden || !$("end").hidden) return;
+    if (/^[0-9]$/.test(e.key) || e.key === "Backspace" || e.key === "Enter") { e.preventDefault(); press(e.key); }
+  });
+  function showAns(cls) { var a = $("ans"); a.textContent = typed || "?"; a.className = "ansbox" + (cls ? " " + cls : ""); }
+  function press(k) {
+    if (locked) { if (k === "Enter" && !$("nextB").hidden) $("nextB").click(); return; }
+    if (/^[0-9]$/.test(k)) { if (typed.length < 4) typed += k; sfx.pop(); }
+    else if (k === "Backspace") typed = typed.slice(0, -1);
+    else if (k === "Enter") return check();
+    showAns();
+  }
+  function check() {
+    if (!typed) return;
+    var v = +typed; tries++; if (first == null) first = typed;
+    if (v === task.r) return solved(true);
+    sfx.no(); showAns("no");
+    if (tries === 1) { $("say").innerHTML = L("Почти! Давай посмотрим на кубиках, как получается ответ.", "Almost! Let's see with cubes how to get the answer."); typed = ""; setTimeout(function () { showAns(); if (stepI < 0) startSteps(); }, 650); return; }
+    solved(false);
+  }
+  function solved(ok) {
+    locked = true; clearTimeout(stepTimer);
+    var clean = ok && tries === 1 && !hintUsed;
+    results[idx] = clean ? "ok" : ok ? "help" : "no";
+    post({ event: "answer", q: task.txt, a: String(task.r), given: first, ok: clean, tries: tries, hint: hintUsed, topic: MODES[mode].topic, skill: MODES[mode].skill[level - 1], err: MODES[mode].err, tpl: MODES[mode].tpl[mode === "mul" && level === 3 ? (Math.max(task.a, task.b) <= 5 ? 0 : 1) : level - 1], secs: Math.round((Date.now() - tq) / 1000) });
+    if (ok) {
+      typed = String(task.r); showAns("ok"); sfx.ok();
+      if (clean) { worldShown++; paintWorld(); if (goal) { goalOk++; paintGoal(); } }
+      $("say").innerHTML = clean ? (EN ? ["Correct! The blocks are going up.", "Right! Your world is growing.", "Nice! Keep it up."] : ["Верно! Блоки уже ставятся.", "Точно! Мир растёт.", "Красиво! Так держать."])[idx % 3] : L("Верно! В следующий раз получится сразу.", "Correct! Next time you will get it on the first try.");
+      paintDots(); setTimeout(next, clean ? 900 : 1500);
+    } else {
+      if (stepI < 0) startSteps();
+      while (stepI < steps.length - 1) nextStep();
+      typed = String(task.r); showAns("ok"); $("say").innerHTML = steps[steps.length - 1].say + L(" Запомни шаги, и следующий получится.", " Remember the steps, and you will get the next one.");
+      $("stepB").hidden = true; $("hintB").hidden = true; $("nextB").hidden = false; paintDots(); $("nextB").focus();
+    }
+  }
+  $("nextB").addEventListener("click", function () { $("nextB").hidden = true; next(); });
+  function paintDots() { var d = $("dots"); d.innerHTML = ""; for (var i = 0; i < ROUND; i++) d.appendChild(el("i", results[i] || (i === idx ? "now" : ""))); $("pos").textContent = Math.min(idx + 1, ROUND) + "/" + ROUND; }
+  function paintGoal() { if (!goal) return; $("goalChip").hidden = false; $("goalN").textContent = Math.min(goalOk, goal); $("goalOf").textContent = goal; }
+  function newTask() {
+    task = gen(); typed = ""; tries = 0; hintUsed = false; first = null; steps = []; stepI = -1; locked = false; tq = Date.now();
+    $("q").textContent = task.txt; showAns(); scene0(); paintDots();
+    $("say").innerHTML = mode === "mul" ? L("Сколько всего клеток на грядке?", "How many squares are in the bed?") : mode === "sub" ? L("Сколько кубиков останется?", "How many cubes will be left?") : L("Сколько кубиков будет вместе?", "How many cubes altogether?");
+    $("hintB").hidden = false; $("stepB").hidden = true; $("nextB").hidden = true;
+  }
+  function next() { idx++; if (idx >= ROUND) return finish(); newTask(); }
+  function startRound() {
+    idx = 0; results = []; seen = {};
+    $("mName").textContent = MODES[mode].name; $("mLv").textContent = MODES[mode].lv[level - 1];
+    $("menu").hidden = true; $("end").hidden = true; $("app").hidden = false;
+    makeWorld(); paintGoal(); newTask();
+  }
+  var STAR = function (on) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="' + (on ? "#FFC83D" : "#E3E6E1") + '" stroke="' + (on ? "#E0A11B" : "#C9CEC7") + '" stroke-width="1.4" stroke-linejoin="round"/></svg>'; };
+  function finish() {
+    var ok = results.filter(function (r) { return r === "ok"; }).length, stars = ok >= 9 ? 3 : ok >= 7 ? 2 : ok >= 4 ? 1 : 0;
+    var key = "kg.best." + mode + "." + level, best = +(store.get(key) || 0); if (stars > best) store.set(key, stars);
+    $("stars").innerHTML = STAR(stars >= 1) + STAR(stars >= 2) + STAR(stars >= 3);
+    $("endT").textContent = stars === 3 ? L("Мастер Кубограда!", "Cubetown master!") : stars ? L("Раунд пройден", "Round complete") : L("Попробуй ещё раз", "Try again");
+    $("endP").textContent = EN
+      ? "Right on the first try: " + ok + " of " + ROUND + "." + (stars < 3 ? " Cube hints will help, and three stars need 9 first-try answers." : " Time to level up.") + (goal ? " Samir's goal: " + Math.min(goalOk, goal) + " of " + goal + "." : "")
+      : "Сразу верно: " + ok + " из " + ROUND + "." + (stars < 3 ? " Подсказки на кубиках помогут разобраться, а для трёх звёзд нужно 9 верных сразу." : " Можно поднимать уровень.") + (goal ? " Цель Самира: " + Math.min(goalOk, goal) + " из " + goal + "." : "");
+    $("end").hidden = false; sfx.win();
+    post({ event: "finish", correct: ok, total: ROUND, stars: stars, mode: mode, level: level });
+  }
+  $("again").addEventListener("click", startRound);
+  $("toMenu").addEventListener("click", openMenu);
+  $("menuB").addEventListener("click", openMenu);
+
+  /* ---------- меню ---------- */
+  function openMenu() {
+    $("end").hidden = true; $("menu").hidden = false;
+    var m = $("modes"); m.innerHTML = "";
+    Object.keys(MODES).filter(function (k) { return !fixed || k === mode; }).forEach(function (k) {
+      var M = MODES[k], b = el("button", "mode"); b.type = "button"; b.setAttribute("aria-pressed", k === mode ? "true" : "false");
+      var mi = el("span", "mi"); M.col.concat(M.col).forEach(function (c, i) { var q = el("i"); q.style.setProperty("--c", c); q.style.height = (8 + (i % 3) * 6) + "px"; mi.appendChild(q); });
+      b.appendChild(mi); b.appendChild(el("b", "", M.name)); b.appendChild(el("small", "", M.desc));
+      b.addEventListener("click", function () { mode = k; openMenu(); });
+      m.appendChild(b);
+    });
+    var l = $("lvls"); l.innerHTML = "";
+    MODES[mode].lv.forEach(function (name, i) { if (fixed && i + 1 !== level) return; var b = el("button", "", name + (+(store.get("kg.best." + mode + "." + (i + 1)) || 0) ? " · " + "★".repeat(+store.get("kg.best." + mode + "." + (i + 1))) : "")); b.type = "button"; b.setAttribute("aria-pressed", i + 1 === level ? "true" : "false"); b.addEventListener("click", function () { level = i + 1; openMenu(); }); l.appendChild(b); });
+    if (goal) { $("goalP").hidden = false; $("goalP").textContent = EN
+      ? "Samir's task: " + goal + " " + en1(goal, "correct answer", "correct answers") + " on the first try · " + MODES[mode].lv[level - 1] + ". Done so far: " + Math.min(goalOk, goal) + "."
+      : "Задание Самира: " + goal + " " + plTail(goal, "верный ответ", "верных ответа", "верных ответов") + " с первой попытки" + (CFG.levelName ? " · " + CFG.levelName : "") + ". Уже есть: " + Math.min(goalOk, goal) + "."; }
+    $("start").focus();
+  }
+  $("start").addEventListener("click", startRound);
+  var hr = $("howRod"); hr.style.setProperty("--u", "9px"); for (var i = 0; i < 10; i++) hr.appendChild(cube());
+  openMenu();
+})();
+</script>
+</body>
+</html>

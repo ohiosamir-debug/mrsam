@@ -265,6 +265,7 @@ textarea.input{min-height:90px;resize:vertical;line-height:1.45}
 .ans .ans-ol{margin:0;padding:10px 12px 10px 30px;border-radius:12px;background:var(--bg);display:flex;flex-direction:column;gap:6px}
 .ans .ans-ol li span{color:var(--muted)}
 .ans div.ans-txt{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.pill.st-price{background:var(--lime);color:var(--forest)}
 
 /* ===== кабинет учителя: математика ===== */
 .mm{display:grid;grid-template-columns:270px minmax(0,1fr);gap:16px;align-items:start}
@@ -1643,7 +1644,7 @@ addEventListener("message",function(e){if(e.data&&e.data.mrsam==="collect")paren
     const sl = scoreLine(s), lowBal = s.balance != null && s.balance <= 1;
     return h("article", { class: "card st", tabindex: 0, role: "button", "aria-label": "Ученик " + s.name, onclick: () => studentModal(s), onkeydown: e => { if (e.key === "Enter") studentModal(s); } },
       h("div", { class: "st-top" }, h("span", { class: "ava" }, (s.name || "?")[0]), h("div", { style: "min-width:0" }, h("b", {}, s.name), h("small", {}, s.code + (s.hasPassword ? "" : " · ещё не входил")))),
-      h("div", { class: "st-foot" }, s.tracks.map(t => h("span", { class: "pill " + t }, TR[t]))),
+      h("div", { class: "st-foot" }, s.tracks.map(t => h("span", { class: "pill " + t }, TR[t])), s.price ? h("span", { class: "pill st-price" }, rub(s.price) + " за занятие") : null),
       h("div", { class: "st-stats" },
         h("div", {}, h("b", { class: lowBal ? "warn" : "" }, s.balance == null ? "—" : String(s.balance)), h("small", {}, "занятий на балансе")),
         h("div", {}, h("b", {}, s.hw.submitted + "/" + s.hw.assigned), h("small", {}, "домашек сдано")),
@@ -1666,6 +1667,7 @@ addEventListener("message",function(e){if(e.data&&e.data.mrsam==="collect")paren
     syncTargets();
     const ed = h("input", { class: "input", type: "date", value: s ? s.examDate : "" });
     const bal = h("input", { class: "input", type: "number", step: "1", value: s && s.balance != null ? s.balance : "" });
+    const price = h("input", { class: "input", type: "number", step: "100", min: "0", inputmode: "numeric", value: s && s.price ? s.price : "", placeholder: "обычная цена курса" });
     const note = h("textarea", { class: "input", placeholder: "Заметка, её видит ученик на главной кабинета" }); note.value = s ? s.note : "";
     const err = h("p", { class: "warn", role: "alert", style: "font-weight:800" });
     let close, noTracksOk = false;
@@ -1673,14 +1675,15 @@ addEventListener("message",function(e){if(e.data&&e.data.mrsam==="collect")paren
       e.preventDefault(); err.textContent = "";
       const tracks = [...tr.querySelectorAll("input:checked")].map(i => i.value);
       if (!tracks.length && !noTracksOk) { noTracksOk = true; err.textContent = "Не отмечено ни одного курса: ученик ничего не увидит. Нажми ещё раз, если так и нужно."; return; }
-      const j = await api("admin_student_save", { code: code.value, name: name.value, tracks: tracks.join(","), ielts: ielts.value, toefl: toefl.value, goal: goal.value, examDate: ed.value, balance: bal.value, note: note.value, create: isNew ? "1" : "0" });
+      const j = await api("admin_student_save", { code: code.value, name: name.value, tracks: tracks.join(","), ielts: ielts.value, toefl: toefl.value, goal: goal.value, examDate: ed.value, balance: bal.value, price: price.value, note: note.value, create: isNew ? "1" : "0" });
       if (j && j.ok) { close(); delete cache.st; toast(isNew ? "Ученик " + j.code + " добавлен. Отправь ему код" : "Сохранено"); if (view === "math") { if (isNew && (tracks.includes("math") || tracks.includes("mathen"))) mCode = j.code; renderMath(true); } else renderStudents(true); } else err.textContent = msg(j);
     } },
       h("div", { class: "field" }, h("label", { for: "st-code", class: "fl" }, "Код для входа"), code, isNew ? h("small", { class: "muted tr-hint" }, "По коду ученик сам задаёт пароль при первом входе, поэтому код лучше сделать неугадываемым. ", h("button", { type: "button", class: "link", onclick: () => { code.value = rndCode("", 8); } }, "Случайный код")) : null), h("label", { class: "field" }, h("span", {}, "Имя"), name),
       h("div", { class: "field wide" }, h("span", {}, "Курсы ученика"), tr, h("small", { class: "muted tr-hint" }, "Ученик видит только отмеченные курсы. Каждый включается отдельно: математика не открывает математику на английском, английский не открывает IELTS и TOEFL.")),
       fIelts, fToefl,
       h("label", { class: "field" }, h("span", {}, "Куда поступает"), goal), h("label", { class: "field" }, h("span", {}, "Дата экзамена"), ed),
-      h("label", { class: "field" }, h("span", {}, "Занятий на балансе"), bal), h("div", {}),
+      h("label", { class: "field" }, h("span", {}, "Занятий на балансе"), bal),
+      h("label", { class: "field" }, h("span", {}, "Цена занятия, ₽"), price, h("small", { class: "muted tr-hint" }, "Своя цена для этого ученика. Пусто = обычная цена курса. Пакеты в кабинете считаются от неё.")),
       h("label", { class: "field wide" }, h("span", {}, "Заметка от Самира"), note), err,
       h("div", { class: "wide", style: "display:flex;gap:8px;flex-wrap:wrap" }, h("button", { class: "btn btn-lime", type: "submit" }, isNew ? "Добавить ученика" : "Сохранить"),
         s ? h("button", { type: "button", class: "btn btn-ghost", onclick: () => { close(); hwDraft = { codes: [s.code], track: s.tracks[0] }; go("homework"); } }, "Задать ему домашку") : null,
@@ -2595,6 +2598,7 @@ addEventListener("message",function(e){if(e.data&&e.data.mrsam==="collect")paren
           let s = db.students.find(x => x.code === code);
           if (s && p.create === "1") return ok({ ok: false, error: "exists" });
           if (!s) { s = { code, hasPassword: false, tests: 0, mathRuns: 0, lastScore: {}, hw: { assigned: 0, submitted: 0, review: 0 }, lessons: { done: 0, upcoming: 0 }, next: "", paid: 0, lastActive: "" }; db.students.push(s); }
+          if (p.price != null) s.price = +p.price > 0 ? Math.round(+p.price) : null;
           Object.assign(s, { name: p.name || "Ученик", tracks, targets: { ielts: p.ielts ? +p.ielts : null, toefl: p.toefl ? +p.toefl : null }, goal: p.goal || "", examDate: p.examDate || "", note: p.note || "", balance: p.balance === "" ? null : +p.balance });
           return ok({ code });
         }

@@ -1345,6 +1345,8 @@ body{background:var(--bg)}
 .lv-pill{display:inline-grid;place-items:center;min-width:44px;height:34px;padding:0 10px;border-radius:12px;background:var(--bg);font:1000 16px/1 var(--display,var(--font));box-shadow:inset 0 0 0 1.5px var(--line)}
 .lv-pill.ok{background:#DDF3E6;color:var(--ok);box-shadow:inset 0 0 0 1.5px var(--ok)}
 @media (max-width:700px){.lv-ladder{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.lv-ladder li{padding:10px 4px;align-items:center}.lv-ladder li b{font-size:18px}.lv-ladder li small{display:none}.lv-you{position:static;margin-top:4px;padding:3px 5px;font-size:9.5px}.lv-top .btn{width:100%}.lv-t{width:100%;justify-content:space-between}}
+
+.pk-mine{display:inline-flex;align-self:flex-start;margin:6px 0 2px;background:var(--lime);color:var(--forest);border-radius:999px;padding:7px 12px;font:900 14px/1.2 var(--font)}
 </style>
 </head>
 <body>
@@ -5189,6 +5191,8 @@ const CONFIG = {
   let payPick = null, payAccepted = false, payStep = null;
   function renderPay() {
     const d = data(), P = CONFIG.payments, pays = d.payments || null;
+    const myPrice = pays && pays.price > 0 ? pays.price : null;
+    const PKG = P.packages.map(p => myPrice && p.lessons ? Object.assign({}, p, { price: p.lessons * myPrice, note: null }) : p);
     const head = h("div", { class: "view-head" }, h("div", {}, h("span", { class: "eyebrow" }, "Оплата"), h("h1", {}, "Оплата занятий"), h("p", {}, "Выбери пакет, оплати удобным способом и нажми «Я оплатил». Самир подтвердит оплату.")));
     const wrap = h("div", { class: "wrap" }, banner(), h("div", { style: "height:20px" }), head);
     const grid = h("div", { class: "pay-grid" });
@@ -5199,15 +5203,15 @@ const CONFIG = {
     bal.append(meme(pays && pays.balance > 2 ? "cool" : "happy", pays && pays.balance > 2 ? "Когда занятия оплачены наперёд" : "Учёба по подписке", pays && pays.balance > 2 ? "Можно думать только про учёбу" : "Пакет экономит время на переводы", { r: 1.5, small: true, tint: "lav" }));
     grid.append(bal);
     // packages
-    const pk = h("section", { class: "card pay-packages", "aria-labelledby": "pk-t" }, h("h2", { id: "pk-t" }, "Выбери пакет"));
+    const pk = h("section", { class: "card pay-packages", "aria-labelledby": "pk-t" }, h("h2", { id: "pk-t" }, "Выбери пакет"), myPrice ? h("p", { class: "pk-mine" }, "Твоя цена: " + rub(myPrice) + " за занятие") : null);
     const opts = h("div", { class: "pk-list", role: "radiogroup", "aria-label": "Пакеты" });
-    P.packages.forEach(p => {
+    PKG.forEach(p => {
       const lbl = h("label", { class: "pk" }, h("input", { type: "radio", name: "pk", value: p.id, checked: payPick === p.id ? true : null, onchange: () => { payPick = p.id; payStep = null; render(); } }),
         h("span", { class: "pk-body" }, h("b", {}, p.name), h("span", {}, p.price != null ? rub(p.price) + (p.lessons > 1 ? ", " + rub(Math.round(p.price / p.lessons)) + " за занятие" : "") : (p.note || "стоимость после разбора"))));
       opts.append(lbl);
     });
     pk.append(opts);
-    const sel = P.packages.find(p => p.id === payPick);
+    const sel = PKG.find(p => p.id === payPick);
     const chk = h("input", { type: "checkbox", id: "offer-ok", checked: payAccepted ? true : null, onchange: e => { payAccepted = e.target.checked; render(); } });
     pk.append(h("label", { class: "offer-check", for: "offer-ok" }, chk, h("span", {}, "Я прочитал и принимаю ", h("a", { href: P.offerUrl, target: "_blank", rel: "noopener" }, "договор оферты"))));
     const link = sel && (P.links[sel.id] || P.link);

@@ -3554,7 +3554,7 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
     const j = await api({ action: "login", exam: DIR });
     sessionOk(j);
     if (!j && checking && S) { checking = "fail"; render(); }
-    if (j && j.ok && Array.isArray(j.homework)) { S.serverHw = j.homework; store.save(S); if (view === "hw") render(); }
+    if (j && j.ok && Array.isArray(j.homework)) { S.serverHw = j.homework; S.lessonPrice = j.payments && j.payments.price > 0 ? j.payments.price : null; store.save(S); if (view === "hw" || view === "pay") render(); }
   }
   function hwAll() {
     const srv = (!demo && S && S.serverHw) || [];
@@ -3623,7 +3623,9 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
     app.append(sch.el);
   }
   function renderPay() {
-    const P = CONFIG.payments; let sel = P.packages[1] || P.packages[0];
+    const LP = !demo && S && S.lessonPrice > 0 ? S.lessonPrice : null;
+    const P = LP ? Object.assign({}, CONFIG.payments, { rate: LP, packages: CONFIG.payments.packages.map(p => p.lessons ? Object.assign({}, p, { price: p.lessons * LP }) : p) }) : CONFIG.payments;
+    let sel = P.packages[1] || P.packages[0];
     const box = h("div", { class: "card pay-box" });
     const draw = () => {
       box.replaceChildren(h("h2", { class: "h", style: "font-size:20px" }, sel.name + ": " + rub(sel.price)));

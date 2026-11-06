@@ -1199,7 +1199,9 @@ const DEMO_GAME = "<!doctype html>\n<html lang=\"ru\">\n<head>\n<meta charset=\"
       en: { title: "Cubetown: farm", desc: "Plant the beds in rows: 4 rows of 6 blocks. You can see multiplication and count by rows.", levels: ["Times 2, 3, 4, 5", "Times 6, 7, 8, 9", "Whole table"] } },
     { id: "b-99", file: "games/99-nights.html", mode: "", title: "99 ночей: таблица умножения", subject: "Математика", cover: "linear-gradient(160deg,#0F2A1F,#E2408F)", desc: "Продержись 99 ночей у костра: каждый верный ответ подкидывает дров.",
       topic: "muldiv", skill: "Таблица умножения на скорость", levels: [{ v: "1", name: "Таблица на 2–5" }, { v: "2", name: "Таблица на 6–9" }, { v: "3", name: "Вся таблица и деление" }],
-      en: { title: "99 nights: times tables", desc: "Survive 99 nights by the campfire: every correct answer adds firewood.", levels: ["Times 2–5", "Times 6–9", "Whole table and division"] } }
+      en: { title: "99 nights: times tables", desc: "Survive 99 nights by the campfire: every correct answer adds firewood.", levels: ["Times 2–5", "Times 6–9", "Whole table and division"] } },
+    { id: "b-circus", file: "games/circus.html", mode: "", title: "Цирк умножения", subject: "Математика", cover: "linear-gradient(160deg,#5A1027,#E8364F 58%,#FFC845)", desc: "Выступи в номерах цирка: таблица умножения и деления, большие числа, остаток, задачи и уравнения. Каждая звезда зажигает огонёк на вывеске.",
+      topic: "muldiv", skill: "Умножение и деление за 3 класс", levels: [{ v: "1", name: "Таблица и особые числа" }, { v: "2", name: "Плюс большие числа и остаток" }, { v: "3", name: "Вся программа и Большое шоу" }] }
   ];
   /** игры для ученика: по темам и уровню из плана, сначала самые нужные */
   function gamesFor(planIn, answers, games) {
@@ -2411,7 +2413,7 @@ addEventListener("message",function(e){if(e.data&&e.data.mrsam==="collect")paren
   async function mGameForm(s, j, a, refresh) {
     const P = MP.norm(j.profile), A = j.answers || [];
     const gj = await load("games", "admin_games");
-    const games = MP.GAMES.concat((gj && gj.ok ? gj.games : []).filter(g => (g.tracks || []).includes(mDir) && g.visible !== false).map(g => ({ id: g.id, title: g.title, topic: g.topic || "", skill: g.skill || "", levels: Array.isArray(g.levels) ? g.levels : [] })));
+    const games = MP.GAMES.filter(g => mDir !== "mathen" || g.en).concat((gj && gj.ok ? gj.games : []).filter(g => (g.tracks || []).includes(mDir) && g.visible !== false).map(g => ({ id: g.id, title: g.title, topic: g.topic || "", skill: g.skill || "", levels: Array.isArray(g.levels) ? g.levels : [] })));
     const p0 = a ? Object.assign({}, a.params) : {};
     const F = { game: p0.game || (games.find(g => P.topics.includes(g.topic)) || games[0]).id, topic: p0.topic || "", level: p0.level || "", goal: +p0.goal || 15, due: a ? a.due || "" : "", note: p0.note || "" };
     let close;

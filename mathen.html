@@ -1875,7 +1875,9 @@ window.MrSamDirs = (function () {
       en: { title: "Cubetown: farm", desc: "Plant the beds in rows: 4 rows of 6 blocks. You can see multiplication and count by rows.", levels: ["Times 2, 3, 4, 5", "Times 6, 7, 8, 9", "Whole table"] } },
     { id: "b-99", file: "games/99-nights.html", mode: "", title: "99 ночей: таблица умножения", subject: "Математика", cover: "linear-gradient(160deg,#0F2A1F,#E2408F)", desc: "Продержись 99 ночей у костра: каждый верный ответ подкидывает дров.",
       topic: "muldiv", skill: "Таблица умножения на скорость", levels: [{ v: "1", name: "Таблица на 2–5" }, { v: "2", name: "Таблица на 6–9" }, { v: "3", name: "Вся таблица и деление" }],
-      en: { title: "99 nights: times tables", desc: "Survive 99 nights by the campfire: every correct answer adds firewood.", levels: ["Times 2–5", "Times 6–9", "Whole table and division"] } }
+      en: { title: "99 nights: times tables", desc: "Survive 99 nights by the campfire: every correct answer adds firewood.", levels: ["Times 2–5", "Times 6–9", "Whole table and division"] } },
+    { id: "b-circus", file: "games/circus.html", mode: "", title: "Цирк умножения", subject: "Математика", cover: "linear-gradient(160deg,#5A1027,#E8364F 58%,#FFC845)", desc: "Выступи в номерах цирка: таблица умножения и деления, большие числа, остаток, задачи и уравнения. Каждая звезда зажигает огонёк на вывеске.",
+      topic: "muldiv", skill: "Умножение и деление за 3 класс", levels: [{ v: "1", name: "Таблица и особые числа" }, { v: "2", name: "Плюс большие числа и остаток" }, { v: "3", name: "Вся программа и Большое шоу" }] }
   ];
   /** игры для ученика: по темам и уровню из плана, сначала самые нужные */
   function gamesFor(planIn, answers, games) {
@@ -2859,7 +2861,7 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
     let gamesCache = null;
     async function games(force) {
       // в курсе «Математика на английском» встроенные игры идут на английском: название, описание, уровни
-      const builtin = MP.GAMES.map(g => Object.assign({ builtin: true }, g, EN && g.en ? { title: g.en.title, desc: g.en.desc, levels: g.levels.map((l, i) => ({ v: l.v, name: g.en.levels[i] || l.name })) } : {}));
+      const builtin = MP.GAMES.filter(g => !EN || g.en).map(g => Object.assign({ builtin: true }, g, EN && g.en ? { title: g.en.title, desc: g.en.desc, levels: g.levels.map((l, i) => ({ v: l.v, name: g.en.levels[i] || l.name })) } : {}));
       if (mode() !== "server") return { ok: true, games: builtin };
       if (gamesCache && !force && Date.now() - gamesCache.at < 120e3) return gamesCache.j;
       const j = await api({ action: "games" });
@@ -3514,13 +3516,19 @@ const MASCOT = {"cap": "<svg class=\"mascot-svg\" viewBox=\"0 0 120 100\" aria-h
     if (!r || !r.ok || !r.html) { toast("Игра не загрузилась, попробуй ещё раз"); return; }
     const a = o.asg && !MP.asgState(o.asg).done ? o.asg : null, p = o.asg ? o.asg.params || {} : {};
     const lvNum = Math.min(3, Math.max(1, parseInt(o.level, 10) || MP.topicState(MD.plan(), MD.answers(), g.topic || "muldiv").d));
-    const cfg = { v: 1, mode: g.mode || "", topic: g.topic || "", level: String(o.level || lvNum), levelName: o.levelName || "", goal: a ? +p.goal || 0 : 0, done: a ? Math.min(+p.goal || 0, a.progress || 0) : 0, name: String(D().profile.name || "").split(/\s+/)[0], lang: EN ? "en" : "ru" };
+    const cfg = { v: 1, mode: g.mode || "", topic: g.topic || "", level: String(o.level || lvNum), levelName: o.levelName || "", goal: a ? +p.goal || 0 : 0, done: a ? Math.min(+p.goal || 0, a.progress || 0) : 0, name: String(D().profile.name || "").split(/\s+/)[0], lang: EN ? "en" : "ru", saved: (D().gameSave || {})[g.id] || null };
     const ses = { id: "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 4), n: 0, c: 0, t0: Date.now(), topics: {} };
     if (a) MD.start(a);
     const clean = (v, n) => String(v == null ? "" : v).slice(0, n);
     MrSamGames.play(g.title, r.html, {
       config: cfg,
       onEvent(ev) {
+        // игра сохраняет свой прогресс (звёзды, рекорды): держим его в кабинете, он переживёт закрытие и другое устройство
+        if (ev.event === "save" && ev.data && typeof ev.data === "object") {
+          let data = null; try { const js = JSON.stringify(ev.data); if (js.length <= 4000) data = JSON.parse(js); } catch (e) { data = null; }
+          if (data) { const x = D(); x.gameSave = Object.assign({}, x.gameSave || {}, { [g.id]: data }); persist(); }
+          return;
+        }
         if (ev.event === "answer" && ses.n < 300) {
           const topic = MB.T(ev.topic) ? ev.topic : g.topic && MB.T(g.topic) ? g.topic : "muldiv";
           const av = MB.parse(ev.a), gv = MB.parse(ev.given);
